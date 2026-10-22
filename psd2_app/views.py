@@ -10,6 +10,7 @@ from psd2_app.state import AppState
 from psd2_app.ui import (
     copy_block,
     context_picker,
+    dropdown,
     field,
     json_block,
     log_panel,
@@ -742,7 +743,7 @@ def _datasheet_event_row(item) -> rx.Component:
     return rx.table.row(
         _sheet_cell(item["started"]),
         _sheet_cell(item["tppname"]),
-        _sheet_cell(item["psd2endpoint"]),
+        _sheet_cell(item["psd2endpoint"], align="left"),
         _sheet_cell(item["partyid"]),
         _datasheet_result_cell(item),
         _sheet_cell(item["requestduration"]),
@@ -836,23 +837,6 @@ def _datasheet_detail() -> rx.Component:
                         ("Standing order", selected["standingorderid"]),
                     ],
                 ),
-                _datasheet_group(
-                    "Validity",
-                    [
-                        ("Valid", selected["valid"]),
-                        ("Valid from", selected["valid_from"]),
-                        ("Valid to", selected["valid_to"]),
-                    ],
-                ),
-                _datasheet_group(
-                    "History",
-                    [
-                        ("Created", selected["hst_created_date"]),
-                        ("Created by", selected["hst_created_by"]),
-                        ("Modified", selected["hst_modified_date"]),
-                        ("Modified by", selected["hst_modified_by"]),
-                    ],
-                ),
                 spacing="4",
                 width="100%",
                 align="start",
@@ -863,6 +847,17 @@ def _datasheet_detail() -> rx.Component:
         ),
         open=AppState.datasheet_detail_open,
         on_open_change=AppState.set_datasheet_detail_open,
+    )
+
+
+def _service_chip(label: str) -> rx.Component:
+    active = AppState.datasheet_services.contains(label)
+    return rx.button(
+        label,
+        size="1",
+        radius="full",
+        variant=rx.cond(active, "solid", "soft"),
+        on_click=AppState.toggle_datasheet_service(label),
     )
 
 
@@ -907,6 +902,43 @@ def _datasheet_filters() -> rx.Component:
                 wrap="wrap",
                 gap="0.4rem",
                 width="100%",
+            ),
+            rx.grid(
+                rx.vstack(
+                    rx.text("Service", size="2", weight="medium"),
+                    rx.hstack(
+                        _service_chip("aisp"),
+                        _service_chip("pisp"),
+                        _service_chip("oauth"),
+                        spacing="2",
+                        align="center",
+                    ),
+                    spacing="1",
+                    align="start",
+                    width="100%",
+                ),
+                dropdown(
+                    "TPP",
+                    AppState.datasheet_tpp_choices,
+                    AppState.datasheet_tpp_value,
+                    AppState.set_datasheet_tpp,
+                ),
+                dropdown(
+                    "Result",
+                    ["All", "success", "error"],
+                    AppState.datasheet_result_value,
+                    AppState.set_datasheet_result,
+                ),
+                dropdown(
+                    "Licence",
+                    AppState.datasheet_licence_choices,
+                    AppState.datasheet_licence_value,
+                    AppState.set_datasheet_licence,
+                ),
+                columns="4",
+                spacing="3",
+                width="100%",
+                align="end",
             ),
             spacing="3",
             width="100%",
@@ -960,13 +992,6 @@ def datasheets_page() -> rx.Component:
                             AppState.datasheet_has_next,
                             AppState.datasheet_page_next,
                         ),
-                        rx.button(
-                            "Load older",
-                            size="1",
-                            variant="soft",
-                            on_click=AppState.load_older_datasheets,
-                            disabled=(~AppState.datasheet_has_more) | AppState.datasheet_loading,
-                        ),
                         rx.cond(AppState.datasheet_loading, rx.spinner(size="1"), rx.fragment()),
                         spacing="2",
                         align="center",
@@ -975,6 +1000,7 @@ def datasheets_page() -> rx.Component:
                         ["Started", "TPP", "Endpoint", "Party", "Result", "Duration"],
                         AppState.datasheet_page_rows,
                         _datasheet_event_row,
+                        ["center", "center", "left", "center", "center", "center"],
                     ),
                     rx.cond(
                         AppState.datasheet_rows.length() == 0,
@@ -2893,27 +2919,27 @@ def _payment_form() -> rx.Component:
     )
 
 
-def _sheet_cell(value, color="#1c2430") -> rx.Component:
+def _sheet_cell(value, color="#1c2430", align="center") -> rx.Component:
     return rx.table.cell(
         rx.text(
             value,
             size="1",
             width="100%",
-            text_align="center",
+            text_align=align,
             color=color,
             style={"overflow": "hidden", "textOverflow": "ellipsis", "whiteSpace": "nowrap"},
         ),
         padding_y="0",
         overflow="hidden",
-        style={"height": "2.15rem", "textAlign": "center", "verticalAlign": "middle"},
+        style={"height": "2.15rem", "textAlign": align, "verticalAlign": "middle"},
     )
 
 
-def _sheet_head(label: str) -> rx.Component:
+def _sheet_head(label: str, align: str = "center") -> rx.Component:
     return rx.table.column_header_cell(
-        rx.text(label, size="1", weight="medium", width="100%", text_align="center"),
+        rx.text(label, size="1", weight="medium", width="100%", text_align=align),
         padding_y="0",
-        style={"height": "2.15rem", "textAlign": "center"},
+        style={"height": "2.15rem", "textAlign": align},
     )
 
 
@@ -2996,9 +3022,13 @@ def _pay_row(item) -> rx.Component:
     )
 
 
-def _fixed_table(headers: list[str], rows, row_builder) -> rx.Component:
+def _fixed_table(headers: list[str], rows, row_builder, aligns: list[str] | None = None) -> rx.Component:
+    headings = [
+        _sheet_head(label, aligns[index] if aligns and index < len(aligns) else "center")
+        for index, label in enumerate(headers)
+    ]
     return rx.table.root(
-        rx.table.header(rx.table.row(*[_sheet_head(label) for label in headers])),
+        rx.table.header(rx.table.row(*headings)),
         rx.table.body(rx.foreach(rows, row_builder)),
         width="100%",
         style={"tableLayout": "fixed"},
@@ -3014,7 +3044,7 @@ def _pager(label, has_prev, on_prev, has_next, on_next) -> rx.Component:
             on_click=on_prev,
             disabled=~has_prev,
         ),
-        rx.text(label, size="1", color="gray", min_width="3.2rem", text_align="center"),
+        rx.text(label, size="1", color="gray", min_width="4.6rem", text_align="center"),
         rx.icon_button(
             rx.icon("chevron-right", size=14),
             size="1",

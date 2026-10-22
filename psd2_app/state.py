@@ -10,7 +10,7 @@ import reflex as rx
 
 from Helpers.environment_config import load_db_config
 from Helpers.kibana_trace import trace_request_in_kibana, trace_span_in_kibana
-from Helpers.oracle_db import blank_request_event, fetch_request_page, test_db_connection
+from Helpers.oracle_db import blank_request_event, fetch_datasheet, test_db_connection
 from psd2_app.logic import (
     CONSENT_SCOPES,
     account_currency,
@@ -79,6 +79,7 @@ from psd2_app.logic import (
 
 TX_PAGE_SIZE = 10
 DATASHEET_PAGE_SIZE = 25
+DATASHEET_PREFETCH_PAGES = 5
 
 
 def _count_text(value: int) -> str:
@@ -384,15 +385,21 @@ class AppState(rx.State):
     datasheet_detail_open: bool = False
     datasheet_detail_index: str = ""
     datasheet_total: str = "0"
+    datasheet_total_count: int = 0
     datasheet_ok_total: str = "0"
     datasheet_error_total: str = "0"
     datasheet_tpp_total: str = "0"
+    datasheet_services: list[str] = []
+    datasheet_tpp: str = ""
+    datasheet_result: str = ""
+    datasheet_licence: str = ""
+    datasheet_tpp_options: list[str] = []
+    datasheet_licence_options: list[str] = []
     datasheet_preset: str = "today"
     datasheet_range: list[int] = [0, 1]
     datasheet_slider_min: int = 0
     datasheet_slider_max: int = 1
     datasheet_page_index: int = 0
-    datasheet_has_more: bool = False
     datasheet_refetch: bool = False
     refresh_error: str = ""
     account_status: str = ""
@@ -759,24 +766,42 @@ class AppState(rx.State):
             return ""
         return datetime.fromtimestamp(int(self.datasheet_range[1])).strftime("%Y-%m-%d %H:%M")
 
+    def _datasheet_page_count(self) -> int:
+        if self.datasheet_total_count <= 0:
+            return 1
+        return (self.datasheet_total_count + DATASHEET_PAGE_SIZE - 1) // DATASHEET_PAGE_SIZE
+
+    def _datasheet_page_loaded(self, page: int) -> bool:
+        if self.datasheet_total_count <= 0:
+            return True
+        start = page * DATASHEET_PAGE_SIZE
+        end = min(start + DATASHEET_PAGE_SIZE, self.datasheet_total_count)
+        loaded = {str(row.get("index") or "") for row in self.datasheet_rows}
+        return all(str(index) in loaded for index in range(start, end))
+
     @rx.var
     def datasheet_page_rows(self) -> list[dict[str, str]]:
         start = self.datasheet_page_index * DATASHEET_PAGE_SIZE
-        return self.datasheet_rows[start:start + DATASHEET_PAGE_SIZE]
+        end = start + DATASHEET_PAGE_SIZE
+        rows = [
+            row for row in self.datasheet_rows
+            if str(row.get("index") or "").isdigit() and start <= int(row["index"]) < end
+        ]
+        rows.sort(key=lambda row: int(row["index"]))
+        return rows
 
     @rx.var
     def datasheet_page_label(self) -> str:
-        pages = max(1, (len(self.datasheet_rows) + DATASHEET_PAGE_SIZE - 1) // DATASHEET_PAGE_SIZE)
+        pages = self._datasheet_page_count()
         current = min(self.datasheet_page_index, pages - 1) + 1
         return f"{current} / {pages}"
 
     @rx.var
     def datasheet_page_note(self) -> str:
-        loaded = len(self.datasheet_rows)
-        if not loaded:
+        if self.datasheet_total_count <= 0:
             return ""
         start = self.datasheet_page_index * DATASHEET_PAGE_SIZE + 1
-        end = min(loaded, (self.datasheet_page_index + 1) * DATASHEET_PAGE_SIZE)
+        end = min(self.datasheet_total_count, (self.datasheet_page_index + 1) * DATASHEET_PAGE_SIZE)
         return f"{start}–{end} of {self.datasheet_total}"
 
     @rx.var
@@ -785,8 +810,27 @@ class AppState(rx.State):
 
     @rx.var
     def datasheet_has_next(self) -> bool:
-        more_loaded = (self.datasheet_page_index + 1) * DATASHEET_PAGE_SIZE < len(self.datasheet_rows)
-        return more_loaded or self.datasheet_has_more
+        return self.datasheet_page_index + 1 < self._datasheet_page_count()
+
+    @rx.var
+    def datasheet_tpp_choices(self) -> list[str]:
+        return ["All", *self.datasheet_tpp_options]
+
+    @rx.var
+    def datasheet_tpp_value(self) -> str:
+        return self.datasheet_tpp or "All"
+
+    @rx.var
+    def datasheet_result_value(self) -> str:
+        return self.datasheet_result or "All"
+
+    @rx.var
+    def datasheet_licence_choices(self) -> list[str]:
+        return ["All", *self.datasheet_licence_options]
+
+    @rx.var
+    def datasheet_licence_value(self) -> str:
+        return self.datasheet_licence or "All"
 
     def _range_pair(self, value: list[float] | list[int]) -> tuple[int, int] | None:
         if not isinstance(value, (list, tuple)) or len(value) < 2:
@@ -819,40 +863,69 @@ class AppState(rx.State):
 
     def _clear_datasheet_stats(self):
         self.datasheet_total = "0"
+        self.datasheet_total_count = 0
         self.datasheet_ok_total = "0"
         self.datasheet_error_total = "0"
         self.datasheet_tpp_total = "0"
 
-    async def _fetch_datasheet_rows(self, environment: str, seq: int | None, append: bool):
+    def _datasheet_query(self) -> dict:
+        if len(self.datasheet_range) < 2:
+            self._sync_slider_bounds()
+        return {
+            "started_from": datetime.fromtimestamp(int(self.datasheet_range[0])),
+            "started_to": datetime.fromtimestamp(int(self.datasheet_range[1])),
+            "services": list(self.datasheet_services),
+            "tpp": self.datasheet_tpp,
+            "result": self.datasheet_result,
+            "licence": self.datasheet_licence,
+        }
+
+    def _apply_datasheet_summary(self, result: dict):
+        options = list(result.get("tpp_options") or [])
+        if self.datasheet_tpp and self.datasheet_tpp not in options:
+            options.insert(0, self.datasheet_tpp)
+        licences = list(result.get("licence_options") or [])
+        if self.datasheet_licence and self.datasheet_licence not in licences:
+            licences.insert(0, self.datasheet_licence)
+        self.datasheet_tpp_options = options
+        self.datasheet_licence_options = licences
+        self.datasheet_total_count = int(result.get("total") or 0)
+        self.datasheet_total = _count_text(self.datasheet_total_count)
+        self.datasheet_ok_total = _count_text(result.get("ok") or 0)
+        self.datasheet_error_total = _count_text(result.get("error") or 0)
+        self.datasheet_tpp_total = _count_text(result.get("tpps") or 0)
+
+    def _merge_datasheet_rows(self, incoming: list[dict[str, str]]):
+        incoming_indexes = {item.get("index") for item in incoming}
+        kept = [row for row in self.datasheet_rows if row.get("index") not in incoming_indexes]
+        self.datasheet_rows = kept + incoming
+
+    async def _query_datasheet(
+        self,
+        environment: str,
+        seq: int | None,
+        offset: int,
+        limit: int,
+        include_summary: bool,
+        replace: bool,
+    ):
         async with self:
             if seq is not None and self.nav_seq != seq:
                 return
-            if len(self.datasheet_range) < 2:
-                self._sync_slider_bounds()
-            started_from = datetime.fromtimestamp(int(self.datasheet_range[0]))
-            started_to = datetime.fromtimestamp(int(self.datasheet_range[1]))
-            before_started = None
-            before_id = ""
-            if append and self.datasheet_rows:
-                last = self.datasheet_rows[-1]
-                if last.get("started") and last.get("id"):
-                    before_started = datetime.strptime(last["started"], "%Y-%m-%d %H:%M:%S")
-                    before_id = last["id"]
-        if append and before_started is None:
-            async with self:
-                self.datasheet_loading = False
-                self.datasheet_has_more = False
-            return
+            query = self._datasheet_query()
         try:
             result = await asyncio.to_thread(
-                fetch_request_page,
+                fetch_datasheet,
                 environment,
-                started_from,
-                started_to,
-                DATASHEET_PAGE_SIZE,
-                before_started,
-                before_id,
-                not append,
+                query["started_from"],
+                query["started_to"],
+                services=query["services"],
+                tpp=query["tpp"],
+                result=query["result"],
+                licence=query["licence"],
+                offset=offset,
+                limit=limit,
+                include_summary=include_summary,
             )
             error = ""
         except Exception as exc:
@@ -870,7 +943,14 @@ class AppState(rx.State):
             else:
                 rerun = False
         if rerun:
-            await self._fetch_datasheet_rows(environment, seq, False)
+            await self._query_datasheet(
+                environment,
+                seq,
+                0,
+                DATASHEET_PAGE_SIZE * DATASHEET_PREFETCH_PAGES,
+                True,
+                True,
+            )
             return
         async with self:
             if seq is not None and self.nav_seq != seq:
@@ -878,36 +958,36 @@ class AppState(rx.State):
             self.datasheet_loading = False
             if error or result is None:
                 self.datasheet_error = error
-                if not append:
+                if replace:
                     self.datasheet_rows = []
                     self.datasheet_page_index = 0
-                    self.datasheet_has_more = False
                     self._clear_datasheet_stats()
                     self.datasheet_detail_open = False
                     self.datasheet_detail_index = ""
                 return
-            incoming = result["rows"]
-            if append:
-                rows = list(self.datasheet_rows)
-                for item in incoming:
-                    item["index"] = str(len(rows))
-                    rows.append(item)
-                self.datasheet_rows = rows
-                if incoming:
-                    self.datasheet_page_index = max(0, (len(rows) - 1) // DATASHEET_PAGE_SIZE)
-            else:
-                for index, item in enumerate(incoming):
-                    item["index"] = str(index)
-                self.datasheet_rows = incoming
+            if include_summary:
+                self._apply_datasheet_summary(result)
+            if replace:
+                self.datasheet_rows = result["rows"]
                 self.datasheet_page_index = 0
-                self.datasheet_total = _count_text(result["total"])
-                self.datasheet_ok_total = _count_text(result["ok"])
-                self.datasheet_error_total = _count_text(result["error"])
-                self.datasheet_tpp_total = _count_text(result["tpps"])
                 self.datasheet_detail_open = False
                 self.datasheet_detail_index = ""
-            self.datasheet_has_more = bool(result["has_more"])
+            else:
+                self._merge_datasheet_rows(result["rows"])
+            pages = self._datasheet_page_count()
+            if self.datasheet_page_index >= pages:
+                self.datasheet_page_index = pages - 1
             self.datasheet_error = ""
+
+    async def _reload_datasheets(self, environment: str, seq: int | None):
+        await self._query_datasheet(
+            environment,
+            seq,
+            0,
+            DATASHEET_PAGE_SIZE * DATASHEET_PREFETCH_PAGES,
+            True,
+            True,
+        )
 
     async def _load_datasheets_for_nav(self, seq: int):
         async with self:
@@ -916,7 +996,7 @@ class AppState(rx.State):
             self._apply_datasheet_config()
             self._sync_slider_bounds()
             environment = self.current_environment
-        await self._fetch_datasheet_rows(environment, seq, False)
+        await self._reload_datasheets(environment, seq)
 
     @rx.event
     def preview_datasheet_range(self, value: list[float]):
@@ -940,25 +1020,74 @@ class AppState(rx.State):
         self._sync_slider_bounds()
         return AppState.refresh_datasheets()
 
+    def _selected_filter(self, value: str | list[str]) -> str:
+        chosen = value[0] if isinstance(value, list) else value
+        chosen = str(chosen or "").strip()
+        return "" if chosen in ("", "All") else chosen
+
+    @rx.event
+    def toggle_datasheet_service(self, service: str):
+        selected = [item for item in self.datasheet_services if item != service]
+        if service not in self.datasheet_services:
+            selected.append(service)
+        self.datasheet_services = selected
+        return AppState.refresh_datasheets()
+
+    @rx.event
+    def set_datasheet_tpp(self, value: str | list[str]):
+        self.datasheet_tpp = self._selected_filter(value)
+        return AppState.refresh_datasheets()
+
+    @rx.event
+    def set_datasheet_result(self, value: str | list[str]):
+        self.datasheet_result = self._selected_filter(value)
+        return AppState.refresh_datasheets()
+
+    @rx.event
+    def set_datasheet_licence(self, value: str | list[str]):
+        self.datasheet_licence = self._selected_filter(value)
+        return AppState.refresh_datasheets()
+
     def datasheet_page_prev(self):
-        if self.datasheet_page_index > 0:
-            self.datasheet_page_index -= 1
+        if self.datasheet_page_index <= 0:
+            return
+        target = self.datasheet_page_index - 1
+        if self._datasheet_page_loaded(target):
+            self.datasheet_page_index = target
+            return
+        return AppState.load_datasheet_page(target)
 
     def datasheet_page_next(self):
-        if (self.datasheet_page_index + 1) * DATASHEET_PAGE_SIZE < len(self.datasheet_rows):
-            self.datasheet_page_index += 1
+        if self.datasheet_page_index + 1 >= self._datasheet_page_count():
             return
-        if self.datasheet_has_more:
-            return AppState.load_older_datasheets()
+        target = self.datasheet_page_index + 1
+        if self._datasheet_page_loaded(target):
+            self.datasheet_page_index = target
+            return
+        return AppState.load_datasheet_page(target)
 
     @rx.event(background=True)
-    async def load_older_datasheets(self):
+    async def load_datasheet_page(self, page: int):
         async with self:
-            if self.datasheet_loading or not self.datasheet_has_more:
+            if self.datasheet_loading:
+                return
+            target = max(0, int(page))
+            if target >= self._datasheet_page_count():
+                return
+            self.datasheet_page_index = target
+            if self._datasheet_page_loaded(target):
                 return
             self.datasheet_loading = True
+            self.datasheet_error = ""
             environment = self.current_environment
-        await self._fetch_datasheet_rows(environment, None, True)
+        await self._query_datasheet(
+            environment,
+            None,
+            target * DATASHEET_PAGE_SIZE,
+            DATASHEET_PAGE_SIZE,
+            False,
+            False,
+        )
         async with self:
             if self.datasheet_error:
                 self._notify(self.datasheet_error, "error")
@@ -974,7 +1103,7 @@ class AppState(rx.State):
             self.datasheet_loading = True
             self.datasheet_error = ""
             environment = self.current_environment
-        await self._fetch_datasheet_rows(environment, None, False)
+        await self._reload_datasheets(environment, None)
         async with self:
             if self.datasheet_error:
                 self._notify(self.datasheet_error, "error")

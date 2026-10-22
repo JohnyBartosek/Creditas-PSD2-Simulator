@@ -244,56 +244,115 @@ def _rows_from_cursor(cursor) -> list[dict[str, str]]:
     return rows
 
 
-def fetch_request_page(
+def _service_clause(services: list[str]) -> str:
+    """aisp and pisp match the service flag. oauth calls are stored without one."""
+    clauses = []
+    for service in services:
+        if service == "aisp":
+            clauses.append("LOWER(PSD2SERVICEFLAG) = 'aisp'")
+        elif service == "pisp":
+            clauses.append("LOWER(PSD2SERVICEFLAG) = 'pisp'")
+        elif service == "oauth":
+            clauses.append(
+                "(LOWER(PSD2SERVICEFLAG) = 'oauth'"
+                " OR (PSD2SERVICEFLAG IS NULL AND LOWER(PSD2ENDPOINT) LIKE '%/oauth%'))"
+            )
+    if not clauses:
+        return ""
+    return " AND (" + " OR ".join(clauses) + ")"
+
+
+def _event_filters(
+    services: list[str] | None,
+    tpp: str,
+    result: str,
+    licence: str,
+) -> tuple[str, dict]:
+    selected = []
+    for service in services or []:
+        name = str(service or "").strip().lower()
+        if name in {"aisp", "pisp", "oauth"} and name not in selected:
+            selected.append(name)
+    sql = _service_clause(selected)
+    binds: dict = {}
+    if str(tpp or "").strip():
+        sql += " AND TPPNAME = :tpp_name"
+        binds["tpp_name"] = str(tpp).strip()
+    if str(result or "").strip():
+        sql += " AND LOWER(RESULTFLAG) = :result_flag"
+        binds["result_flag"] = str(result).strip().lower()
+    if str(licence or "").strip():
+        sql += " AND PSD2LICENCENUMBER = :licence_number"
+        binds["licence_number"] = str(licence).strip()
+    return sql, binds
+
+
+def fetch_datasheet(
     environment: str | None,
     started_from: datetime,
     started_to: datetime,
+    *,
+    services: list[str] | None = None,
+    tpp: str = "",
+    result: str = "",
+    licence: str = "",
+    offset: int = 0,
     limit: int = 25,
-    before_started: datetime | None = None,
-    before_id: str | None = None,
-    include_stats: bool = True,
+    include_summary: bool = True,
 ) -> dict:
-    """One page of request events inside a start-time window, newest first."""
-    size = max(1, min(int(limit), 200))
+    """Count the filtered window first, then load one slice of request events."""
+    start = max(0, int(offset))
+    size = max(1, min(int(limit), 500))
     config = _require_config(environment)
-    binds: dict = {"started_from": started_from, "started_to": started_to}
-    cursor_sql = ""
-    if before_started is not None and before_id not in (None, ""):
-        cursor_sql = """
-          AND (
-            STARTED < :before_started
-            OR (STARTED = :before_started AND ID < :before_id)
-          )
-        """
-        binds["before_started"] = before_started
-        ident = str(before_id).strip()
-        if ident.endswith(".0"):
-            ident = ident[:-2]
-        try:
-            binds["before_id"] = int(ident)
-        except (TypeError, ValueError):
-            binds["before_id"] = ident
-    sql = (
+    extra_sql, extra_binds = _event_filters(services, tpp, result, licence)
+    window = {"started_from": started_from, "started_to": started_to}
+    filtered = {**window, **extra_binds}
+    rows_sql = (
         _REQUEST_COLUMNS
-        + cursor_sql
+        + extra_sql
         + " ORDER BY STARTED DESC NULLS LAST, ID DESC"
-        + f" FETCH FIRST {size} ROWS ONLY"
+        + f" OFFSET {start} ROWS FETCH NEXT {size} ROWS ONLY"
     )
     connection = _connect(config)
     try:
         with connection.cursor() as cursor:
-            stats = {"total": 0, "ok": 0, "error": 0, "tpps": 0}
-            if include_stats:
-                cursor.execute(_STATS_SQL, binds)
+            summary = {
+                "total": 0,
+                "ok": 0,
+                "error": 0,
+                "tpps": 0,
+                "tpp_options": [],
+                "licence_options": [],
+            }
+            if include_summary:
+                cursor.execute(_STATS_SQL + extra_sql, filtered)
                 total, ok_count, error_count, tpp_count = cursor.fetchone()
-                stats = {
+                cursor.execute(
+                    "SELECT DISTINCT TPPNAME FROM PSD.MCH_OAM_REQUESTEVENTPSD"
+                    " WHERE STARTED >= :started_from AND STARTED <= :started_to"
+                    " AND TPPNAME IS NOT NULL ORDER BY TPPNAME",
+                    window,
+                )
+                tpp_options = [str(row[0]) for row in cursor.fetchall() if row[0]]
+                cursor.execute(
+                    "SELECT DISTINCT PSD2LICENCENUMBER FROM PSD.MCH_OAM_REQUESTEVENTPSD"
+                    " WHERE STARTED >= :started_from AND STARTED <= :started_to"
+                    " AND PSD2LICENCENUMBER IS NOT NULL ORDER BY PSD2LICENCENUMBER",
+                    window,
+                )
+                licence_options = [str(row[0]) for row in cursor.fetchall() if row[0]]
+                summary = {
                     "total": int(total or 0),
                     "ok": int(ok_count or 0),
                     "error": int(error_count or 0),
                     "tpps": int(tpp_count or 0),
+                    "tpp_options": tpp_options,
+                    "licence_options": licence_options,
                 }
-            cursor.execute(sql, binds)
+            cursor.execute(rows_sql, filtered)
             rows = _rows_from_cursor(cursor)
-        return {"rows": rows, "has_more": len(rows) == size, **stats}
+            for index, item in enumerate(rows):
+                item["index"] = str(start + index)
+        return {"rows": rows, **summary}
     finally:
         connection.close()
