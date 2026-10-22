@@ -600,6 +600,28 @@ def _prefer_documents(current: list[dict[str, str]], extra: list[dict[str, str]]
     return current
 
 
+def _merge_documents(*groups: list[dict[str, str]]) -> list[dict[str, str]]:
+    unique = []
+    seen = set()
+    for group in groups:
+        for item in group:
+            key = (item.get("timestamp", ""), item.get("message", ""))
+            if key in seen:
+                continue
+            seen.add(key)
+            unique.append(item)
+    unique.sort(key=lambda item: item.get("timestamp", ""))
+    return unique
+
+
+def _with_span(documents: list[dict[str, str]], span_ids: list[str]) -> list[dict[str, str]]:
+    needles = [span_id.lower() for span_id in span_ids if span_id]
+    return [
+        item for item in documents
+        if any(span_id in (item.get("message") or "").lower() for span_id in needles)
+    ]
+
+
 def _download_span_logs(page, captured, data_view: str, span_ids: list[str]) -> list[dict[str, str]]:
     documents = []
     for attempt in range(3):
@@ -607,14 +629,17 @@ def _download_span_logs(page, captured, data_view: str, span_ids: list[str]) -> 
         captured.clear()
         page.goto(kibana_spans_url(span_ids), wait_until="domcontentloaded", timeout=60000)
         page.wait_for_timeout(3000 if attempt == 0 else 4000)
-        page_documents = _documents_from_responses(captured)
-        api_documents = _documents_from_kibana(page, data_view, _span_kql(span_ids))
-        if not api_documents:
-            api_documents = _documents_from_kibana(page, data_view, _span_message_kql(span_ids))
-        documents = _prefer_documents(page_documents, api_documents)
+        page_documents = _with_span(_documents_from_responses(captured), span_ids)
+        api_documents = []
+        for span_id in span_ids:
+            found = _documents_from_kibana(page, data_view, _span_kql([span_id]))
+            if not found:
+                found = _documents_from_kibana(page, data_view, _span_message_kql([span_id]))
+            api_documents = _merge_documents(api_documents, _with_span(found, [span_id]))
+        documents = _merge_documents(page_documents, api_documents)
         _step(
-            f"Discover returned {len(page_documents)} record(s), "
-            f"Elasticsearch returned {len(api_documents)}"
+            f"Kept {len(documents)} record(s) for {len(span_ids)} span id(s). "
+            f"Discover {len(page_documents)}, Elasticsearch {len(api_documents)}."
         )
         if documents:
             return documents
@@ -635,15 +660,13 @@ def _span_message_kql(span_ids: list[str]) -> str:
 
 
 def _documents_from_responses(responses) -> list[dict[str, str]]:
-    best = []
+    merged = []
     for response in responses:
         try:
-            documents = documents_from_payload(response.text())
+            merged = _merge_documents(merged, documents_from_payload(response.text()))
         except Exception:
             continue
-        if len(documents) > len(best):
-            best = documents
-    return best
+    return merged
 
 
 def _search_body(page, data_view: str, kql: str) -> str:
