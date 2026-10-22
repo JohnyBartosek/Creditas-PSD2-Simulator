@@ -5,6 +5,7 @@
 Before first launch, configure credentials in 'Configuration/{environment-dir}/entra.config.json}'. (Use 'entra.config.template.json' as a source, add your Creditas credentials and WSO2 client secret)
 
 installation:
+
 0) cd to working directory of the app
 1) $env:NODE\_TLS\_REJECT\_UNAUTHORIZED="0"   // in PowerShell, just in case
 
