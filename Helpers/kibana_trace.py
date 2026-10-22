@@ -35,7 +35,7 @@ def _step(message: str) -> None:
         return
 
 _SEARCH_JS = """
-async ({ dataViewId, kql, size }) => {
+async ({ dataViewId, kql, size, timeFrom, analyzeWildcard }) => {
   const headers = { "kbn-xsrf": "true", "content-type": "application/json" };
   let viewResponse = await fetch(`/api/data_views/data_view/${dataViewId}`, {
     headers: { ...headers, "elastic-api-version": "2023-10-31" },
@@ -52,11 +52,23 @@ async ({ dataViewId, kql, size }) => {
   if (!index) {
     return { ok: false, status: viewResponse.status, body: "Data view has no title." };
   }
+  const filter = [
+    {
+      query_string: {
+        query: kql,
+        lenient: true,
+        analyze_wildcard: !!analyzeWildcard,
+      },
+    },
+  ];
+  if (timeFrom) {
+    filter.push({ range: { "@timestamp": { gte: timeFrom, lte: "now" } } });
+  }
   const params = {
     index,
     body: {
       size: size || 500,
-      query: { query_string: { query: kql } },
+      query: { bool: { filter } },
       sort: [{ "@timestamp": "desc" }],
       fields: ["message", "@timestamp"],
       _source: ["message", "@timestamp"],
@@ -614,34 +626,26 @@ def _merge_documents(*groups: list[dict[str, str]]) -> list[dict[str, str]]:
     return unique
 
 
-def _with_span(documents: list[dict[str, str]], span_ids: list[str]) -> list[dict[str, str]]:
-    needles = [span_id.lower() for span_id in span_ids if span_id]
-    return [
-        item for item in documents
-        if any(span_id in (item.get("message") or "").lower() for span_id in needles)
-    ]
-
-
 def _download_span_logs(page, captured, data_view: str, span_ids: list[str]) -> list[dict[str, str]]:
+    """One Elasticsearch query per span. A combined "or" matches the word or, not both spans."""
     documents = []
     for attempt in range(3):
         _step(f"Downloading span logs, attempt {attempt + 1} of 3")
         captured.clear()
         page.goto(kibana_spans_url(span_ids), wait_until="domcontentloaded", timeout=60000)
         page.wait_for_timeout(3000 if attempt == 0 else 4000)
-        page_documents = _with_span(_documents_from_responses(captured), span_ids)
-        api_documents = []
+        found_any = False
+        documents = []
         for span_id in span_ids:
-            found = _documents_from_kibana(page, data_view, _span_kql([span_id]))
+            found = _documents_from_kibana(page, data_view, f"*{span_id}*", wildcard=True)
             if not found:
-                found = _documents_from_kibana(page, data_view, _span_message_kql([span_id]))
-            api_documents = _merge_documents(api_documents, _with_span(found, [span_id]))
-        documents = _merge_documents(page_documents, api_documents)
-        _step(
-            f"Kept {len(documents)} record(s) for {len(span_ids)} span id(s). "
-            f"Discover {len(page_documents)}, Elasticsearch {len(api_documents)}."
-        )
-        if documents:
+                found = _documents_from_kibana(page, data_view, _span_kql([span_id]))
+            _step(f"Span {span_id} returned {len(found)} record(s)")
+            if found:
+                found_any = True
+            documents = _merge_documents(documents, found)
+        if found_any:
+            _step(f"Kept {len(documents)} record(s) for {len(span_ids)} span id(s)")
             return documents
     return documents
 
@@ -650,32 +654,19 @@ def _span_kql(span_ids: list[str]) -> str:
     return kibana_spans_kql(span_ids)
 
 
-def _span_message_kql(span_ids: list[str]) -> str:
-    clauses = []
-    for span_id in span_ids:
-        span_id = (span_id or "").strip().replace("\\", "\\\\").replace('"', '\\"')
-        if span_id:
-            clauses.append(f'message: "*{span_id}*"')
-    return " or ".join(clauses)
-
-
-def _documents_from_responses(responses) -> list[dict[str, str]]:
-    merged = []
-    for response in responses:
-        try:
-            merged = _merge_documents(merged, documents_from_payload(response.text()))
-        except Exception:
-            continue
-    return merged
-
-
-def _search_body(page, data_view: str, kql: str) -> str:
+def _search_body(page, data_view: str, kql: str, *, wildcard: bool = False) -> str:
     if not data_view or not kql:
         return ""
     try:
         result = page.evaluate(
             _SEARCH_JS,
-            {"dataViewId": data_view, "kql": kql, "size": 500},
+            {
+                "dataViewId": data_view,
+                "kql": kql,
+                "size": 500,
+                "timeFrom": get_kibana_settings()["time_from"],
+                "analyzeWildcard": wildcard,
+            },
         )
     except Exception as exc:
         _step(f"Elasticsearch query failed: {exc}")
@@ -687,8 +678,8 @@ def _search_body(page, data_view: str, kql: str) -> str:
     return str(result.get("body") or "")
 
 
-def _documents_from_kibana(page, data_view: str, kql: str) -> list[dict[str, str]]:
-    return documents_from_payload(_search_body(page, data_view, kql))
+def _documents_from_kibana(page, data_view: str, kql: str, *, wildcard: bool = False) -> list[dict[str, str]]:
+    return documents_from_payload(_search_body(page, data_view, kql, wildcard=wildcard))
 
 
 def _span_ids_from_kibana(page, data_view: str, request_id: str) -> list[str]:
