@@ -71,11 +71,48 @@ function Invoke-Status {
     Invoke-Git status
 }
 
+function Get-UnmergedPaths {
+    return @(& git diff --name-only --diff-filter=U | Where-Object { $_ })
+}
+
+function Repair-UnmergedIndex {
+    # git stash cannot run while the index still has conflict stages.
+    # That is the "needs merge" / "could not write index" failure.
+    $unmerged = Get-UnmergedPaths
+    if ($unmerged.Count -eq 0) {
+        return
+    }
+
+    Write-Host "An unfinished merge is blocking the download:"
+    foreach ($path in $unmerged) {
+        Write-Host "  $path"
+    }
+    Write-Host "Clearing the conflict from the index."
+    Invoke-Git reset --mixed
+
+    $marked = @()
+    foreach ($path in $unmerged) {
+        if ((Test-Path -LiteralPath $path) -and (Select-String -LiteralPath $path -Pattern '^<<<<<<< ' -Quiet)) {
+            $marked += $path
+        }
+    }
+    if ($marked.Count -gt 0) {
+        Write-Host "These files still contain conflict markers, so they are put back to the last commit:"
+        foreach ($path in $marked) {
+            Write-Host "  $path"
+        }
+        Write-Host "Anything already saved with 'git stash' is left as it is."
+        Invoke-Git restore --source=HEAD --worktree --staged -- @marked
+    }
+}
+
 function Invoke-Download {
     $state = Get-BranchState
     if (-not $state.HasUpstream) {
         throw "Branch '$($state.Branch)' has no origin/$($state.Branch). Nothing to download."
     }
+    Repair-UnmergedIndex
+    $state = Get-BranchState
     if ($state.Ahead -gt 0 -and $state.Behind -gt 0) {
         throw "Branch '$($state.Branch)' has diverged from origin ($($state.Ahead) local, $($state.Behind) remote). This script does not merge or rebase."
     }
@@ -132,6 +169,10 @@ function Invoke-Upload {
     }
     else {
         Write-Host "No remote branch origin/$($state.Branch) yet."
+    }
+
+    if ((Get-UnmergedPaths).Count -gt 0) {
+        throw "Unresolved merge. Finish or clear it before upload:`n$((Get-UnmergedPaths) -join "`n")"
     }
 
     if ($state.Behind -gt 0) {

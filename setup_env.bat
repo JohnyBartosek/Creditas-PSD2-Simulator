@@ -19,7 +19,7 @@ if exist "ThirdParty\instantclient_23_26\oci.dll" (
 
 echo Downloading Oracle Instant Client
 if not exist "ThirdParty" mkdir "ThirdParty"
-curl.exe -L --fail --retry 2 -o "ThirdParty\instantclient-basiclite.zip" "https://download.oracle.com/otn_software/nt/instantclient/2326400/instantclient-basiclite-windows.x64-23.26.4.0.0.zip"
+curl.exe -L --fail --retry 2 --ssl-revoke-best-effort -o "ThirdParty\instantclient-basiclite.zip" "https://download.oracle.com/otn_software/nt/instantclient/2326400/instantclient-basiclite-windows.x64-23.26.4.0.0.zip"
 if errorlevel 1 goto fail
 tar -xf "ThirdParty\instantclient-basiclite.zip" -C "ThirdParty"
 del "ThirdParty\instantclient-basiclite.zip"
