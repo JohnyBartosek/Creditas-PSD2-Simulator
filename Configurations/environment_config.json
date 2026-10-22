@@ -120,8 +120,8 @@
         "login_url": "https://ui.dmz.prod.ibk.gwc.az.creditasgroup.cz/login"
       },
       "kibana": {
-        "discover_url": "",
-        "data_view": "",
+        "discover_url": "https://kibana.eck-pro-01.pro.int.k8s.creditas.cz/app/discover",
+        "data_view": "c3c87a66-6c71-4960-99ed-567f7eff8533",
         "time_from": "now-24h"
       }
     }
