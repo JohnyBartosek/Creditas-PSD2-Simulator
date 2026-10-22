@@ -1,13 +1,16 @@
 """Session state for the Reflex PSD2 simulator."""
 
 import asyncio
+import calendar
 import json
 import queue
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import reflex as rx
 
+from Helpers.environment_config import load_db_config
 from Helpers.kibana_trace import trace_request_in_kibana, trace_span_in_kibana
+from Helpers.oracle_db import blank_request_event, fetch_request_page, test_db_connection
 from psd2_app.logic import (
     CONSENT_SCOPES,
     account_currency,
@@ -75,6 +78,34 @@ from psd2_app.logic import (
 
 
 TX_PAGE_SIZE = 10
+DATASHEET_PAGE_SIZE = 25
+
+
+def _count_text(value: int) -> str:
+    return f"{int(value):,}".replace(",", " ")
+
+
+def _shift_months(value: datetime, months: int) -> datetime:
+    month_index = value.month - 1 + months
+    year = value.year + month_index // 12
+    month = month_index % 12 + 1
+    day = min(value.day, calendar.monthrange(year, month)[1])
+    return value.replace(year=year, month=month, day=day)
+
+
+def _datasheet_preset_window(name: str, now: datetime) -> tuple[datetime, datetime]:
+    now = now.replace(microsecond=0)
+    if name == "hour":
+        return now - timedelta(hours=1), now
+    if name == "week":
+        return now - timedelta(days=7), now
+    if name == "month":
+        return _shift_months(now, -1), now
+    if name == "ytd":
+        return now.replace(month=1, day=1, hour=0, minute=0, second=0), now
+    if name == "year":
+        return datetime(now.year - 1, 1, 1), datetime(now.year, 1, 1) - timedelta(seconds=1)
+    return now.replace(hour=0, minute=0, second=0), now
 PAGE_WAIT_MESSAGES = {
     "dashboard": "Loading dashboard...",
     "accounts": "Loading accounts...",
@@ -85,6 +116,7 @@ PAGE_WAIT_MESSAGES = {
     "configuration": "Loading configuration...",
     "auth-code": "Loading authorization codes...",
     "kibana-miner": "Opening Kibana Log Miner...",
+    "datasheets": "Opening Datasheets...",
 }
 _TX_BLANK = {
     "index": "",
@@ -335,6 +367,33 @@ class AppState(rx.State):
     kibana_trace_logs: list[dict[str, str]] = []
     kibana_trace_index: str = ""
     kibana_trace_detail: str = ""
+    datasheet_host: str = ""
+    datasheet_port: str = ""
+    datasheet_database: str = ""
+    datasheet_username: str = ""
+    datasheet_password_set: bool = False
+    datasheet_configured: bool = False
+    datasheet_config_path: str = ""
+    datasheet_testing: bool = False
+    datasheet_message: str = ""
+    datasheet_ok: bool = False
+    datasheet_connection_open: bool = False
+    datasheet_loading: bool = False
+    datasheet_error: str = ""
+    datasheet_rows: list[dict[str, str]] = []
+    datasheet_detail_open: bool = False
+    datasheet_detail_index: str = ""
+    datasheet_total: str = "0"
+    datasheet_ok_total: str = "0"
+    datasheet_error_total: str = "0"
+    datasheet_tpp_total: str = "0"
+    datasheet_preset: str = "today"
+    datasheet_range: list[int] = [0, 1]
+    datasheet_slider_min: int = 0
+    datasheet_slider_max: int = 1
+    datasheet_page_index: int = 0
+    datasheet_has_more: bool = False
+    datasheet_refetch: bool = False
     refresh_error: str = ""
     account_status: str = ""
     account_status_text: str = ""
@@ -661,6 +720,287 @@ class AppState(rx.State):
         if mode in {"request", "span"}:
             self.kibana_miner_mode = mode
 
+    def _apply_datasheet_config(self):
+        config = load_db_config(self.current_environment)
+        self.datasheet_host = config["host"]
+        self.datasheet_port = config["port"]
+        self.datasheet_database = config["database"]
+        self.datasheet_username = config["username"]
+        self.datasheet_password_set = bool(str(config.get("password") or "").strip())
+        self.datasheet_configured = bool(config["configured"])
+        self.datasheet_config_path = config["config_path"]
+
+    def toggle_datasheet_connection(self):
+        self.datasheet_connection_open = not self.datasheet_connection_open
+
+    def show_datasheet_detail(self, index: str):
+        self.datasheet_detail_index = str(index)
+        self.datasheet_detail_open = True
+
+    def set_datasheet_detail_open(self, is_open: bool):
+        self.datasheet_detail_open = is_open
+
+    @rx.var
+    def datasheet_selected(self) -> dict[str, str]:
+        for row in self.datasheet_rows:
+            if row.get("index") == self.datasheet_detail_index:
+                return row
+        return blank_request_event()
+
+    @rx.var
+    def datasheet_from_label(self) -> str:
+        if len(self.datasheet_range) < 2 or not self.datasheet_range[0]:
+            return ""
+        return datetime.fromtimestamp(int(self.datasheet_range[0])).strftime("%Y-%m-%d %H:%M")
+
+    @rx.var
+    def datasheet_to_label(self) -> str:
+        if len(self.datasheet_range) < 2 or not self.datasheet_range[1]:
+            return ""
+        return datetime.fromtimestamp(int(self.datasheet_range[1])).strftime("%Y-%m-%d %H:%M")
+
+    @rx.var
+    def datasheet_page_rows(self) -> list[dict[str, str]]:
+        start = self.datasheet_page_index * DATASHEET_PAGE_SIZE
+        return self.datasheet_rows[start:start + DATASHEET_PAGE_SIZE]
+
+    @rx.var
+    def datasheet_page_label(self) -> str:
+        pages = max(1, (len(self.datasheet_rows) + DATASHEET_PAGE_SIZE - 1) // DATASHEET_PAGE_SIZE)
+        current = min(self.datasheet_page_index, pages - 1) + 1
+        return f"{current} / {pages}"
+
+    @rx.var
+    def datasheet_page_note(self) -> str:
+        loaded = len(self.datasheet_rows)
+        if not loaded:
+            return ""
+        start = self.datasheet_page_index * DATASHEET_PAGE_SIZE + 1
+        end = min(loaded, (self.datasheet_page_index + 1) * DATASHEET_PAGE_SIZE)
+        return f"{start}–{end} of {self.datasheet_total}"
+
+    @rx.var
+    def datasheet_has_prev(self) -> bool:
+        return self.datasheet_page_index > 0
+
+    @rx.var
+    def datasheet_has_next(self) -> bool:
+        more_loaded = (self.datasheet_page_index + 1) * DATASHEET_PAGE_SIZE < len(self.datasheet_rows)
+        return more_loaded or self.datasheet_has_more
+
+    def _range_pair(self, value: list[float] | list[int]) -> tuple[int, int] | None:
+        if not isinstance(value, (list, tuple)) or len(value) < 2:
+            return None
+        start, end = int(value[0]), int(value[1])
+        if end < start:
+            start, end = end, start
+        return start, end
+
+    def _sync_slider_bounds(self):
+        now = datetime.now().replace(microsecond=0)
+        minimum = datetime(now.year - 1, 1, 1)
+        self.datasheet_slider_min = int(minimum.timestamp())
+        self.datasheet_slider_max = max(int(now.timestamp()), self.datasheet_slider_min + 60)
+        if self.datasheet_preset:
+            start, end = _datasheet_preset_window(self.datasheet_preset, now)
+            self.datasheet_range = [int(start.timestamp()), int(end.timestamp())]
+            return
+        pair = self._range_pair(self.datasheet_range)
+        if pair is None:
+            start, end = _datasheet_preset_window("today", now)
+            self.datasheet_range = [int(start.timestamp()), int(end.timestamp())]
+            self.datasheet_preset = "today"
+            return
+        start_ts = min(max(pair[0], self.datasheet_slider_min), self.datasheet_slider_max)
+        end_ts = min(max(pair[1], self.datasheet_slider_min), self.datasheet_slider_max)
+        if end_ts < start_ts:
+            start_ts, end_ts = end_ts, start_ts
+        self.datasheet_range = [start_ts, end_ts]
+
+    def _clear_datasheet_stats(self):
+        self.datasheet_total = "0"
+        self.datasheet_ok_total = "0"
+        self.datasheet_error_total = "0"
+        self.datasheet_tpp_total = "0"
+
+    async def _fetch_datasheet_rows(self, environment: str, seq: int | None, append: bool):
+        async with self:
+            if seq is not None and self.nav_seq != seq:
+                return
+            if len(self.datasheet_range) < 2:
+                self._sync_slider_bounds()
+            started_from = datetime.fromtimestamp(int(self.datasheet_range[0]))
+            started_to = datetime.fromtimestamp(int(self.datasheet_range[1]))
+            before_started = None
+            before_id = ""
+            if append and self.datasheet_rows:
+                last = self.datasheet_rows[-1]
+                if last.get("started") and last.get("id"):
+                    before_started = datetime.strptime(last["started"], "%Y-%m-%d %H:%M:%S")
+                    before_id = last["id"]
+        if append and before_started is None:
+            async with self:
+                self.datasheet_loading = False
+                self.datasheet_has_more = False
+            return
+        try:
+            result = await asyncio.to_thread(
+                fetch_request_page,
+                environment,
+                started_from,
+                started_to,
+                DATASHEET_PAGE_SIZE,
+                before_started,
+                before_id,
+                not append,
+            )
+            error = ""
+        except Exception as exc:
+            result = None
+            error = str(exc).strip() or "Failed to load request events."
+        async with self:
+            if seq is not None and self.nav_seq != seq:
+                return
+            if self.datasheet_refetch:
+                self.datasheet_refetch = False
+                self.datasheet_loading = True
+                self._sync_slider_bounds()
+                environment = self.current_environment
+                rerun = True
+            else:
+                rerun = False
+        if rerun:
+            await self._fetch_datasheet_rows(environment, seq, False)
+            return
+        async with self:
+            if seq is not None and self.nav_seq != seq:
+                return
+            self.datasheet_loading = False
+            if error or result is None:
+                self.datasheet_error = error
+                if not append:
+                    self.datasheet_rows = []
+                    self.datasheet_page_index = 0
+                    self.datasheet_has_more = False
+                    self._clear_datasheet_stats()
+                    self.datasheet_detail_open = False
+                    self.datasheet_detail_index = ""
+                return
+            incoming = result["rows"]
+            if append:
+                rows = list(self.datasheet_rows)
+                for item in incoming:
+                    item["index"] = str(len(rows))
+                    rows.append(item)
+                self.datasheet_rows = rows
+                if incoming:
+                    self.datasheet_page_index = max(0, (len(rows) - 1) // DATASHEET_PAGE_SIZE)
+            else:
+                for index, item in enumerate(incoming):
+                    item["index"] = str(index)
+                self.datasheet_rows = incoming
+                self.datasheet_page_index = 0
+                self.datasheet_total = _count_text(result["total"])
+                self.datasheet_ok_total = _count_text(result["ok"])
+                self.datasheet_error_total = _count_text(result["error"])
+                self.datasheet_tpp_total = _count_text(result["tpps"])
+                self.datasheet_detail_open = False
+                self.datasheet_detail_index = ""
+            self.datasheet_has_more = bool(result["has_more"])
+            self.datasheet_error = ""
+
+    async def _load_datasheets_for_nav(self, seq: int):
+        async with self:
+            if self.nav_seq != seq:
+                return
+            self._apply_datasheet_config()
+            self._sync_slider_bounds()
+            environment = self.current_environment
+        await self._fetch_datasheet_rows(environment, seq, False)
+
+    @rx.event
+    def preview_datasheet_range(self, value: list[float]):
+        pair = self._range_pair(value)
+        if pair is None:
+            return
+        self.datasheet_range = [pair[0], pair[1]]
+
+    @rx.event
+    def commit_datasheet_range(self, value: list[float]):
+        pair = self._range_pair(value)
+        if pair is None:
+            return
+        self.datasheet_preset = ""
+        self.datasheet_range = [pair[0], pair[1]]
+        return AppState.refresh_datasheets()
+
+    @rx.event
+    def select_datasheet_preset(self, key: str):
+        self.datasheet_preset = key or "today"
+        self._sync_slider_bounds()
+        return AppState.refresh_datasheets()
+
+    def datasheet_page_prev(self):
+        if self.datasheet_page_index > 0:
+            self.datasheet_page_index -= 1
+
+    def datasheet_page_next(self):
+        if (self.datasheet_page_index + 1) * DATASHEET_PAGE_SIZE < len(self.datasheet_rows):
+            self.datasheet_page_index += 1
+            return
+        if self.datasheet_has_more:
+            return AppState.load_older_datasheets()
+
+    @rx.event(background=True)
+    async def load_older_datasheets(self):
+        async with self:
+            if self.datasheet_loading or not self.datasheet_has_more:
+                return
+            self.datasheet_loading = True
+            environment = self.current_environment
+        await self._fetch_datasheet_rows(environment, None, True)
+        async with self:
+            if self.datasheet_error:
+                self._notify(self.datasheet_error, "error")
+
+    @rx.event(background=True)
+    async def refresh_datasheets(self):
+        async with self:
+            self._apply_datasheet_config()
+            self._sync_slider_bounds()
+            if self.datasheet_loading:
+                self.datasheet_refetch = True
+                return
+            self.datasheet_loading = True
+            self.datasheet_error = ""
+            environment = self.current_environment
+        await self._fetch_datasheet_rows(environment, None, False)
+        async with self:
+            if self.datasheet_error:
+                self._notify(self.datasheet_error, "error")
+
+    @rx.event(background=True)
+    async def test_datasheet_connection(self):
+        async with self:
+            if self.datasheet_testing:
+                return
+            self.datasheet_testing = True
+            self.datasheet_message = ""
+            self.datasheet_ok = False
+            environment = self.current_environment
+        try:
+            message = await asyncio.to_thread(test_db_connection, environment)
+            ok = True
+        except Exception as exc:
+            message = str(exc).strip() or "Connection failed."
+            ok = False
+        async with self:
+            self.datasheet_testing = False
+            self.datasheet_message = message
+            self.datasheet_ok = ok
+            self._apply_datasheet_config()
+            self._notify(message, "success" if ok else "error")
+
     @rx.event
     def find_kibana_logs(self):
         value = self.kibana_miner_request_id.strip()
@@ -773,6 +1113,9 @@ class AppState(rx.State):
             return
         if page_id == "consents":
             await self._load_consents_for_nav(seq)
+            return
+        if page_id == "datasheets":
+            await self._load_datasheets_for_nav(seq)
             return
         async with self:
             if self.nav_seq != seq:

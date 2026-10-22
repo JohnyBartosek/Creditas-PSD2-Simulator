@@ -632,6 +632,372 @@ def kibana_miner_page() -> rx.Component:
     )
 
 
+def _datasheet_fact(label: str, value) -> rx.Component:
+    return rx.hstack(
+        rx.text(label, size="2", color="#667085", width="7.5rem", flex_shrink="0"),
+        rx.text(value, size="2", weight="medium", style={"wordBreak": "break-all"}),
+        width="100%",
+        align="start",
+        spacing="3",
+    )
+
+
+def _datasheet_connection_panel() -> rx.Component:
+    return rx.cond(
+        AppState.datasheet_connection_open,
+        rx.box(
+            rx.vstack(
+                rx.hstack(
+                    rx.heading("Connection", size="4"),
+                    rx.badge(AppState.current_environment, variant="soft"),
+                    rx.spacer(),
+                    rx.icon_button(
+                        rx.icon("x", size=16),
+                        size="1",
+                        variant="ghost",
+                        color_scheme="gray",
+                        on_click=AppState.toggle_datasheet_connection,
+                    ),
+                    width="100%",
+                    align="center",
+                ),
+                rx.cond(
+                    AppState.datasheet_configured,
+                    rx.vstack(
+                        _datasheet_fact("Host", AppState.datasheet_host),
+                        _datasheet_fact("Port", AppState.datasheet_port),
+                        _datasheet_fact("Database", AppState.datasheet_database),
+                        _datasheet_fact("Username", AppState.datasheet_username),
+                        _datasheet_fact(
+                            "Password",
+                            rx.cond(AppState.datasheet_password_set, "Set", "Empty"),
+                        ),
+                        spacing="2",
+                        width="100%",
+                        align="start",
+                    ),
+                    rx.text(
+                        "No database connection for this environment.",
+                        size="2",
+                        color="#667085",
+                    ),
+                ),
+                rx.text(AppState.datasheet_config_path, size="1", color="#98a2b3"),
+                rx.button(
+                    rx.cond(AppState.datasheet_testing, "Connecting...", "Test connection"),
+                    on_click=AppState.test_datasheet_connection,
+                    disabled=AppState.datasheet_testing,
+                    style={"background": "#4f46e5", "color": "white"},
+                ),
+                rx.cond(
+                    AppState.datasheet_message != "",
+                    rx.text(
+                        AppState.datasheet_message,
+                        size="2",
+                        color=rx.cond(AppState.datasheet_ok, "#067647", "#b42318"),
+                    ),
+                ),
+                spacing="3",
+                width="100%",
+                align="start",
+            ),
+            position="fixed",
+            top="4.75rem",
+            right="1.25rem",
+            width="26rem",
+            max_height="70vh",
+            overflow_y="auto",
+            background="white",
+            border="1px solid #e4e7ec",
+            border_radius="12px",
+            box_shadow="0 16px 40px rgba(16, 24, 40, 0.16)",
+            padding="1rem",
+            z_index="45",
+        ),
+    )
+
+
+def _datasheet_result_cell(item) -> rx.Component:
+    color = rx.cond(item["tone"] == "ok", "green", rx.cond(item["tone"] == "error", "red", "gray"))
+    return rx.table.cell(
+        rx.center(
+            rx.cond(
+                item["resultflag"] != "",
+                rx.badge(item["resultflag"], variant="soft", size="1", color_scheme=color),
+                rx.text("—", size="1", color="#98a2b3"),
+            ),
+            width="100%",
+        ),
+        padding_y="0",
+        style={"height": "2.15rem", "textAlign": "center", "verticalAlign": "middle"},
+    )
+
+
+def _datasheet_event_row(item) -> rx.Component:
+    row_background = rx.cond(
+        item["tone"] == "ok",
+        "#f0fdf4",
+        rx.cond(item["tone"] == "error", "#fef2f2", "white"),
+    )
+    return rx.table.row(
+        _sheet_cell(item["started"]),
+        _sheet_cell(item["tppname"]),
+        _sheet_cell(item["psd2endpoint"]),
+        _sheet_cell(item["partyid"]),
+        _datasheet_result_cell(item),
+        _sheet_cell(item["requestduration"]),
+        on_click=AppState.show_datasheet_detail(item["index"]),
+        cursor="pointer",
+        style={"height": "2.15rem", "background": row_background},
+        _hover={"background": "#e8eefc"},
+    )
+
+
+def _datasheet_group(title: str, facts: list[tuple[str, object]]) -> rx.Component:
+    return rx.vstack(
+        rx.text(title, size="2", weight="bold", color="#1c2430"),
+        rx.flex(
+            *[_modal_fact(label, value) for label, value in facts],
+            wrap="wrap",
+            gap="0.85rem 1.25rem",
+            width="100%",
+        ),
+        spacing="2",
+        width="100%",
+        align="start",
+    )
+
+
+def _datasheet_detail() -> rx.Component:
+    selected = AppState.datasheet_selected
+    return rx.dialog.root(
+        rx.dialog.content(
+            rx.hstack(
+                rx.dialog.title(rx.cond(selected["code"] != "", selected["code"], "Request")),
+                rx.spacer(),
+                rx.dialog.close(
+                    rx.icon_button(
+                        rx.icon("x", size=16),
+                        size="2",
+                        variant="ghost",
+                        color_scheme="gray",
+                        radius="full",
+                    ),
+                ),
+                width="100%",
+                align="center",
+            ),
+            rx.vstack(
+                _datasheet_group(
+                    "Request",
+                    [
+                        ("ID", selected["id"]),
+                        ("Code", selected["code"]),
+                        ("X-Request-ID", selected["xrequestid"]),
+                        ("Started", selected["started"]),
+                        ("Ended", selected["ended"]),
+                        ("Duration", selected["requestduration"]),
+                        ("Result", selected["resultflag"]),
+                    ],
+                ),
+                rx.cond(
+                    selected["errordescription"] != "",
+                    rx.box(
+                        rx.text(selected["errordescription"], size="2", white_space="pre-wrap"),
+                        width="100%",
+                        padding="0.75rem",
+                        background="#fef2f2",
+                        border_radius="10px",
+                    ),
+                ),
+                _datasheet_group(
+                    "TPP",
+                    [
+                        ("TPP ID", selected["tppid"]),
+                        ("Name", selected["tppname"]),
+                        ("Licence", selected["psd2licencenumber"]),
+                        ("Service", selected["psd2serviceflag"]),
+                        ("Endpoint", selected["psd2endpoint"]),
+                    ],
+                ),
+                _datasheet_group(
+                    "Party",
+                    [
+                        ("Party ID", selected["partyid"]),
+                        ("User involved", selected["userinvolvedflag"]),
+                        ("Country", selected["country"]),
+                    ],
+                ),
+                _datasheet_group(
+                    "References",
+                    [
+                        ("Payment", selected["paymentid"]),
+                        ("Account", selected["accountid"]),
+                        ("Standing order", selected["standingorderid"]),
+                    ],
+                ),
+                _datasheet_group(
+                    "Validity",
+                    [
+                        ("Valid", selected["valid"]),
+                        ("Valid from", selected["valid_from"]),
+                        ("Valid to", selected["valid_to"]),
+                    ],
+                ),
+                _datasheet_group(
+                    "History",
+                    [
+                        ("Created", selected["hst_created_date"]),
+                        ("Created by", selected["hst_created_by"]),
+                        ("Modified", selected["hst_modified_date"]),
+                        ("Modified by", selected["hst_modified_by"]),
+                    ],
+                ),
+                spacing="4",
+                width="100%",
+                align="start",
+            ),
+            max_width="48rem",
+            max_height="80vh",
+            overflow_y="auto",
+        ),
+        open=AppState.datasheet_detail_open,
+        on_open_change=AppState.set_datasheet_detail_open,
+    )
+
+
+def _datasheet_preset(label: str, key: str) -> rx.Component:
+    active = AppState.datasheet_preset == key
+    return rx.button(
+        label,
+        size="1",
+        radius="full",
+        variant=rx.cond(active, "solid", "soft"),
+        on_click=AppState.select_datasheet_preset(key),
+    )
+
+
+def _datasheet_filters() -> rx.Component:
+    return rx.box(
+        rx.vstack(
+            rx.hstack(
+                rx.text(AppState.datasheet_from_label, size="2", weight="medium", color="#1c2430"),
+                rx.spacer(),
+                rx.text(AppState.datasheet_to_label, size="2", weight="medium", color="#1c2430"),
+                width="100%",
+                align="center",
+            ),
+            rx.slider(
+                value=AppState.datasheet_range,
+                default_value=[0, 1],
+                min=AppState.datasheet_slider_min,
+                max=AppState.datasheet_slider_max,
+                step=60,
+                on_change=AppState.preview_datasheet_range,
+                on_value_commit=AppState.commit_datasheet_range,
+                width="100%",
+            ),
+            rx.flex(
+                _datasheet_preset("Last hour", "hour"),
+                _datasheet_preset("Today", "today"),
+                _datasheet_preset("Last week", "week"),
+                _datasheet_preset("Last month", "month"),
+                _datasheet_preset("Year to date", "ytd"),
+                _datasheet_preset("Last year", "year"),
+                wrap="wrap",
+                gap="0.4rem",
+                width="100%",
+            ),
+            spacing="3",
+            width="100%",
+            align="start",
+        ),
+        width="100%",
+        padding="1rem 1.15rem",
+        background="white",
+        border="1px solid #e7eaf0",
+        border_radius="16px",
+        box_shadow="0 10px 28px rgba(16, 24, 40, 0.06)",
+    )
+
+
+def _datasheets_header() -> rx.Component:
+    return rx.hstack(
+        _accounts_icon("refresh-cw", AppState.refresh_datasheets, "Refresh"),
+        _accounts_icon("database", AppState.toggle_datasheet_connection, "Connection"),
+        spacing="1",
+        align="center",
+        margin_right="1.25rem",
+    )
+
+
+def datasheets_page() -> rx.Component:
+    return page_shell(
+        "Datasheets",
+        rx.box(
+            rx.vstack(
+                _datasheet_filters(),
+                rx.grid(
+                    _dash_widget("Total", AppState.datasheet_total),
+                    _dash_widget("TPPs", AppState.datasheet_tpp_total),
+                    _dash_widget("Succeeded", AppState.datasheet_ok_total),
+                    _dash_widget("Failed", AppState.datasheet_error_total),
+                    columns="4",
+                    spacing="3",
+                    width="100%",
+                ),
+                rx.cond(
+                    AppState.datasheet_error != "",
+                    rx.callout(AppState.datasheet_error, color_scheme="red", width="100%"),
+                ),
+                _list_panel(
+                    "Request events",
+                    rx.hstack(
+                        _pager(
+                            AppState.datasheet_page_label,
+                            AppState.datasheet_has_prev,
+                            AppState.datasheet_page_prev,
+                            AppState.datasheet_has_next,
+                            AppState.datasheet_page_next,
+                        ),
+                        rx.button(
+                            "Load older",
+                            size="1",
+                            variant="soft",
+                            on_click=AppState.load_older_datasheets,
+                            disabled=(~AppState.datasheet_has_more) | AppState.datasheet_loading,
+                        ),
+                        rx.cond(AppState.datasheet_loading, rx.spinner(size="1"), rx.fragment()),
+                        spacing="2",
+                        align="center",
+                    ),
+                    _fixed_table(
+                        ["Started", "TPP", "Endpoint", "Party", "Result", "Duration"],
+                        AppState.datasheet_page_rows,
+                        _datasheet_event_row,
+                    ),
+                    rx.cond(
+                        AppState.datasheet_rows.length() == 0,
+                        rx.cond(AppState.datasheet_error != "", "", "No request events in this range."),
+                        AppState.datasheet_page_note,
+                    ),
+                ),
+                _datasheet_detail(),
+                spacing="4",
+                width="100%",
+                align="start",
+                padding_bottom="1.5rem",
+            ),
+            width="100%",
+            flex="1",
+            min_height="0",
+            overflow_y="auto",
+        ),
+        header_action=_datasheets_header(),
+        fill=True,
+    )
+
+
 def configuration_page() -> rx.Component:
     return page_shell(
         "Configuration",
@@ -3105,6 +3471,7 @@ def app_page() -> rx.Component:
                         ("configuration", configuration_page()),
                         ("auth-code", auth_code_page()),
                         ("kibana-miner", kibana_miner_page()),
+                        ("datasheets", datasheets_page()),
                         dashboard_page(),
                     ),
                 ),
@@ -3118,7 +3485,8 @@ def app_page() -> rx.Component:
                     | (AppState.current_page == "users")
                     | (AppState.current_page == "consents")
                     | (AppState.current_page == "tokens")
-                    | (AppState.current_page == "auth-code"),
+                    | (AppState.current_page == "auth-code")
+                    | (AppState.current_page == "datasheets"),
                     "hidden",
                     "auto",
                 ),
@@ -3131,6 +3499,7 @@ def app_page() -> rx.Component:
             align="start",
         ),
         log_panel(),
+        rx.cond(AppState.current_page == "datasheets", _datasheet_connection_panel()),
         notice_toasts(),
         width="100%",
         height="100vh",

@@ -295,6 +295,60 @@ def get_entra_config_file(environment: Optional[str] = None) -> Path:
     return config_dir / "entra_config.json"
 
 
+def get_db_config_file(environment: Optional[str] = None) -> Path:
+    """Oracle credentials for the Datasheets tool: Configurations/{ENV}/db_config.json."""
+    return get_configurations_dir(environment) / "db_config.json"
+
+
+def db_config_display_path(environment: Optional[str] = None) -> str:
+    """Path of the database config relative to the project root."""
+    path = get_db_config_file(environment)
+    try:
+        return path.relative_to(PROJECT_ROOT).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def load_db_config(environment: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Load the Oracle connection for an environment.
+
+    Read from disk on every call so a password filled into the file is picked up
+    without restarting the app. The password stays out of environment_config.json,
+    which is rewritten from memory when the environment changes.
+    """
+    path = get_db_config_file(environment)
+    display = db_config_display_path(environment)
+    empty: Dict[str, Any] = {
+        "host": "",
+        "port": "",
+        "database": "",
+        "username": "",
+        "password": "",
+        "configured": False,
+        "config_path": display,
+    }
+    if not path.exists():
+        return empty
+
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    port = data.get("port", "")
+    host = str(data.get("host") or "").strip()
+    database = str(data.get("database") or "").strip()
+    username = str(data.get("username") or "").strip()
+    return {
+        "host": host,
+        "port": "" if port is None else str(port).strip(),
+        "database": database,
+        "username": username,
+        "password": str(data.get("password") or ""),
+        "configured": bool(host or database or username),
+        "config_path": display,
+    }
+
+
 def get_token_config_file(environment: Optional[str] = None) -> Path:
     """
     Get the full path to the token configuration file for a specific environment

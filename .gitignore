@@ -10,5 +10,7 @@ __pycache__/
 .kibana-profile/
 Configurations/ITG/entra_config.json
 Configurations/TST/entra_config.json
+Configurations/*/db_config.json
+ThirdParty/
 Tests
 Templates

@@ -350,6 +350,7 @@ def sidebar() -> rx.Component:
                 rx.text("Tools", weight="bold", size="2"),
                 rx.vstack(
                     _nav_button("Kibana Log Miner", "kibana-miner"),
+                    _nav_button("Datasheets", "datasheets"),
                     spacing="1",
                     width="100%",
                     min_width="0",

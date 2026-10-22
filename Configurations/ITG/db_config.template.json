@@ -1,0 +1,7 @@
+{
+  "host": "crd-fra-npr-exa-db-oxkbe1-vip.db.npr.gwc.oci.creditasgroup.cz",
+  "port": 1521,
+  "database": "itgpsdp_app.db.vcn1npr.oraclevcn.com",
+  "username": "EXT_DIFA_JBARTOSEK",
+  "password": ""
+}
