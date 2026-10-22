@@ -6,7 +6,7 @@ Before first launch, configure credentials in
 - 'Configuration/{environment-dir}/entra.config.json'. (Use 'entra.config.template.json' as a source, add your Creditas credentials and WSO2 client secret) - needed for OTP and Consents API
 - 'Configuration/{environment-dir}/db.config.json' - needed for DB reporting features
 
-installation:
+Installation:
 
 0) cd to working directory of the app
 
