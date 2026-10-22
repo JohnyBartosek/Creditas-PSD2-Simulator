@@ -1,0 +1,6 @@
+{
+  "access_token_expiration_seconds": 300,
+  "refresh_token_expiration_seconds": 15552000,
+  "authorization_code_expiration_seconds": 300
+}
+

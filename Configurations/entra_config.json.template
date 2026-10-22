@@ -1,0 +1,9 @@
+{
+  "tenant_id": "YOUR_TENANT_ID",
+  "client_id": "YOUR_CLIENT_ID",
+  "client_secret": "YOUR_CLIENT_SECRET",
+  "component_client_id": "YOUR_COMPONENT_CLIENT_ID",
+  "employee_username": "YOUR_EMPLOYEE_USERNAME@creditas.cz",
+  "employee_password": "YOUR_PASSWORD"
+}
+

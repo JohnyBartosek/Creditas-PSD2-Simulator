@@ -1,0 +1,65 @@
+{
+  "users": [
+    {
+      "partyId": "91669",
+      "name": "Řehoř Řeřicha",
+      "birthDate": "27.06.1971",
+      "username": "Pirat407849@creditas.cz",
+      "password": "Heslo1122*",
+      "phoneNumber": "420722853555"
+    },
+    {
+      "partyId": "91742",
+      "name": "Řehoř Řeřicha",
+      "birthDate": "17.8.1971",
+      "username": "Pirat550013@creditas.cz",
+      "password": "Heslo1122*",
+      "phoneNumber": "420722853555"
+    },
+    {
+      "partyId": "93806",
+      "name": "Neupravuj PSD2 Subjektek",
+      "birthDate": "23.8.1982",
+      "username": "PSD2_ITG_1@creditas.cz",
+      "password": "Heslo1122*",
+      "phoneNumber": "420735643010",
+      "mpin": "123369"
+    },
+    {
+      "partyId": "97639",
+      "name": "Soukromý PSD2 Subjektík",
+      "birthDate": "3.1.1980",
+      "username": "PSD2_ITG_2@creditas.cz",
+      "password": "Heslo1122*",
+      "phoneNumber": "420723371356",
+      "mpin": "123369"
+    },
+    {
+      "partyId": "101694",
+      "name": "Elizej DIFA Doubek",
+      "birthDate": "01.01.1979",
+      "username": "Pirat276155@creditas.cz",
+      "password": "Heslo1122*",
+      "phoneNumber": "420705994100",
+      "mpin": "123369"
+    },
+    {
+      "partyId": "101718",
+      "name": "Fidel DIFA Husák",
+      "birthDate": "10.04.1978",
+      "username": "Pirat759698@creditas.cz",
+      "password": "Heslo1122*",
+      "phoneNumber": "420702509078",
+      "mpin": "123369"
+    },
+    {
+      "partyId": "101696",
+      "name": "Sigfríd DIFA Buchta",
+      "birthDate": "22.01.2003",
+      "username": "Pirat891977@creditas.cz",
+      "password": "Heslo1122*",
+      "phoneNumber": "420724704772",
+      "mpin": "123369"
+    }
+  ]
+}

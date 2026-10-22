@@ -1,0 +1,849 @@
+{
+  "registrations": [
+    {
+      "timestamp": "2025-12-06T17:37:27.148123Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "d19057d4-c41a-4a84-b8ac-b8b508030c27"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "MusicStore, s.r.o.",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Sat, 06 Dec 2025 17:37:26 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "b5082b51-2cb8-4d1d-9cf1-759a58528045",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "49019ecd28ec7ea8",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "efb561e3b338b9fc",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYWl0Z2d3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0LzUxZGY4N2YzMmM1ZTQ3MTY4MjViMzM5YzU2OGI4OGM2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJ1bzVFOGJBWnlwZDZkQkQtUWFKcUtXSXU0U2FuYkVUUGdHYlQwaXhleW5rIiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3NjUwNDI2NDYsImF6cCI6InVvNUU4YkFaeXBkNmRCRC1RYUpxS1dJdTRTYW5iRVRQZ0diVDBpeGV5bmsiLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjoxNzk2NTc4NjQ2LCJpYXQiOjE3NjUwNDI2NDYsImp0aSI6IjJkNWI5ZWE4LWVjZTgtNDUwYi1hZDc4LTliZjYxYzEyNzE1YiIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.Qzg9bMZOZloOSW4L4HG_IY4V_uNXDBsBZ-wiXAP9NGtmjHF7l42GfAcP2B1aycnOAX6XxoYEGU7Y_u2xjhw9RT-rjHXCQh97kxwK_I6Vvx60v4T_HfBsJneb8yZujfptztK6EDSCs-w_XVGZHVfPveHt2CGPOKTM-9JdX8nhPXfF0BJoWM1_u8yfWT2ut6oTIln3dXeFmZZ3htUKYKKnTh-Wop5rsQKEjMJgl9gbH2OTaCDMS39UtjQZaZeKcCzWCXQHVdkRtbTHXFZu2y4wkvUL0vf8DapbnbvM6KbT1pFMYHlvWijFUjYB2uOArsgRC8wPjhsuQclMjCIPx5w65w",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1765042645",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/uo5E8bAZypd6dBD-QaJqKWIu4SanbETPgGbT0ixeynk",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "uo5E8bAZypd6dBD-QaJqKWIu4SanbETPgGbT0ixeynk",
+          "client_secret": "3VfZ95029jwOqz8QfanS48h9iKJj9RfEXXyYiHySVdWdUzqCyLNm0xp9cAge2kvX",
+          "client_name": "MusicStore, s.r.o.",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "d19057d4-c41a-4a84-b8ac-b8b508030c27"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-12-06T17:38:19.082590Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "c84126cd-91cb-4c5e-9678-c7ea1765a197"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "CarFactory, a.s.",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Sat, 06 Dec 2025 17:38:18 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "ffc24cc0-1a98-4040-b677-6285cbdd2ce7",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "972979f89156211d",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "8fe15f8265f306eb",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYWl0Z2d3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0LzUxZGY4N2YzMmM1ZTQ3MTY4MjViMzM5YzU2OGI4OGM2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJJVzdMeGQySXo2UjUtV0ZkSGRrTDlmLWNVM0lnZ3IzeEc1Sy1mSEpvck1nIiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3NjUwNDI2OTcsImF6cCI6IklXN0x4ZDJJejZSNS1XRmRIZGtMOWYtY1UzSWdncjN4RzVLLWZISm9yTWciLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjoxNzk2NTc4Njk3LCJpYXQiOjE3NjUwNDI2OTcsImp0aSI6IjJjNTEyODg4LWVkMjQtNDU2Yi1hMjU1LTA0OWM5OTg3NjYyNSIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.fGypywk1p4P0Qofi-RPd5dj3W7xVagGLBH1XkchH_A42gQib3HgYLYVKq55d324yS0zQ92MVSze87reiUvUgyDKdNDunGy_TkQ8C06Gru0NI4jMJnhEE9Jxqxr4ipd1pSxB3I98G03kCcvlgs2KmWW3XiMKB4xSSF4gK9rN7VzULwJtV3LZdNG96GuSLghTJ4gmq2PIlmT5yISX-eZy88aAm3NLhnpcw4Qdfc593RoXG2bGprOrhAJeMOnnCb7V9cNZEEiT6cyAbj8BVxW7DXZb047Hxx7QvuFDjvz06_8t831aEInZJTrbX_nO0M94GC_yli-452T0CyydH3qlf4w",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1765042697",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/IW7Lxd2Iz6R5-WFdHdkL9f-cU3Iggr3xG5K-fHJorMg",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "IW7Lxd2Iz6R5-WFdHdkL9f-cU3Iggr3xG5K-fHJorMg",
+          "client_secret": "qQN1j0BMz-IrpIHUsowMJHsJm7Ea00OSaLN1nI5vYYBwGJTGC5HZTO7RuKNWqBLX",
+          "client_name": "CarFactory, a.s.",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "c84126cd-91cb-4c5e-9678-c7ea1765a197"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-12-06T18:19:05.786466Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "917f7a5d-746c-44c8-8def-81742fd7e95c"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "baKING manufacture, s.r.o.",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp pisp",
+          "scopes": "aisp pisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Sat, 06 Dec 2025 18:19:04 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "f0132163-5453-4c0a-856b-b170ea3cf1c6",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "e229cce7e2ddc093",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "9a838fa394c4beef",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYWl0Z2d3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0LzUxZGY4N2YzMmM1ZTQ3MTY4MjViMzM5YzU2OGI4OGM2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJBTUtUcTZCYnhXdEhHZ2NrN05sVkIzV1E0QVY5aUJYaW5ORkZWRUJmcEQ0IiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3NjUwNDUxNDQsImF6cCI6IkFNS1RxNkJieFd0SEdnY2s3TmxWQjNXUTRBVjlpQlhpbk5GRlZFQmZwRDQiLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjoxNzk2NTgxMTQ0LCJpYXQiOjE3NjUwNDUxNDQsImp0aSI6IjI3NzZjZWYzLTAwNGMtNDM2Ny1hMzk5LTg3YWVjY2Y0NmNhNSIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.ZB25upCSmRt6EtW2r8C1ze5-1k8J-PFbaGrhBznUUh8_hJ9LP7GbWHy2stPaeE0nCosc0Kr6mUOenU3ukzQYW1mrj0gqI2cMyO23N2V-DRNWJj9ogHGZdZ8y9F-mmGMpYRtZ4rYSCgPIbjA1LhypqRFOzn97wiEvw_T2vHm3ssx56mPABdLJBhALwA4XbnO4GcbHPL44msMKgHeTnQPVrPZ8v66V5a3GmCXuewO4Bzo8pYD1hm-UToLPbqDDcCa9HkNe-MNMUkaHAer3FS-lqPM-E8j5mW22HQ1kqzcoewKZJgtBVhM4XnUYXreSdsiyx5BuqLV1FAgi15WQPcFfCg",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1765045144",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/AMKTq6BbxWtHGgck7NlVB3WQ4AV9iBXinNFFVEBfpD4",
+          "scope": "pisp aisp",
+          "scopes": "pisp aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "AMKTq6BbxWtHGgck7NlVB3WQ4AV9iBXinNFFVEBfpD4",
+          "client_secret": "eaMyH7V2P7gablDeo9k8B-QJYXmpqDKppVnKaI5ZNn6rEshj6fksdv5TPZFzFmM0",
+          "client_name": "baKING manufacture, s.r.o.",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "917f7a5d-746c-44c8-8def-81742fd7e95c"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-12-08T14:44:18.394458Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "d1731f29-6063-4a61-9f61-69cababed71e"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "Pivovar, s.r.o.",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Mon, 08 Dec 2025 14:44:17 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "51818d0e-340c-4b88-9865-e0c5dcf57e34",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "cd824c5dcb9f81d5",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "3e2c4dbe398df131",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYWl0Z2d3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0LzUxZGY4N2YzMmM1ZTQ3MTY4MjViMzM5YzU2OGI4OGM2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJQOGlZMWJZMDllRG1pUjU4M2ljM3NybW9feGljX0ZwVjAyMV9XalpGUEdrIiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3NjUyMDUwNTcsImF6cCI6IlA4aVkxYlkwOWVEbWlSNTgzaWMzc3Jtb194aWNfRnBWMDIxX1dqWkZQR2siLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjoxNzk2NzQxMDU3LCJpYXQiOjE3NjUyMDUwNTcsImp0aSI6ImM5Njk0NjBkLTM2YTEtNGY0My05MDc1LTM3NmMzMzkwNmIwZSIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.cCKwB4DEejTk6IGKvX4S3fuLyRKtNyOcgI4pAIafYJdIsb5bmRflVS-9JhFVfcbT1AAZHBJzMR74v15n7PJ8_aq6jS2ujlUQpMHsRzyBae4MMNKP_9TVhYlicKF4j2atwktPcSgknEHDrlQxEV3L3xCZAgq4lYYl0wEmywRZhc93oZ0EBJctvk0XH43Q1L2ZNNlVdM79_d-wRpd0naDqnervWQ2BrVgo_6TbJpGMPwUv04k_6dXeJc9vFG-s7PRKAJxYOK3vBoCZRiXLEWe_dhXgyyBty1_vw4Nn8qDw8GdpkXcm0D4pEASSWJOYqn-82PNWxEbfSyR6t_fPdjzm5A",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1765205057",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/P8iY1bY09eDmiR583ic3srmo_xic_FpV021_WjZFPGk",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "P8iY1bY09eDmiR583ic3srmo_xic_FpV021_WjZFPGk",
+          "client_secret": "C6pgwIM9sOsZxG71OpZrZwtv1gLhnlHYE28mlZZnMvsdXF9VwUdxt0IbyY6e7mYG",
+          "client_name": "Pivovar, s.r.o.",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "d1731f29-6063-4a61-9f61-69cababed71e"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-01-14T14:44:39.334694Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "25a59549-9587-4389-9e0a-ac24cf719a32"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "WeCreateIt, s.r.o.",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp pisp",
+          "scopes": "aisp pisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Wed, 14 Jan 2026 14:44:37 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "099c077f-268a-4950-bcf0-c87510052ca4",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "afaa1613d898b8ce",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "88d5094f3058e7a3",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYWl0Z2d3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0LzUxZGY4N2YzMmM1ZTQ3MTY4MjViMzM5YzU2OGI4OGM2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJOanlBb213WVVWSGJqRnRuOTVLbGh6Vy1vNW5mNnAySGNMNWlDYUhZNFg0IiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3Njg0MDE4NzcsImF6cCI6Ik5qeUFvbXdZVVZIYmpGdG45NUtsaHpXLW81bmY2cDJIY0w1aUNhSFk0WDQiLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjo0OTIyMDAxODc3LCJpYXQiOjE3Njg0MDE4NzcsImp0aSI6ImIyOTdjZjUyLWI4YzEtNDM2YS04MGJkLWVlNGE2YWRlMTRlZiIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.VTYFKH1v5X49OIp7Qayjt7YA5mK0xD3nCtnn1n-QLcwUsqrGAz3X7N5yPiISz8vxjBg8sMLoABk6738zUbohfybi3PyK3a6-DPmSkeI66_pCZgwadOHf2GsAJpylGdTdAoN4blOsf1oy_8ocgYtxjR13az8f5XRTqIqunuzmd7GuJpsm40cGI-SCyh_ZmZSsC2jzRszTW5N3CqOEXUOq_nP7O4BBPQVygHHd2rRbeNwBHe1ZSmkElFw-HqY1S0kopUr-CVzh3xU8nYCL8ZRSNXn9KuE_MhRvI55R8fsVPaYI88thcTQQDlLAWrbXhsdEOMCy9zgTJkr722x0rGELzQ",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1768401877",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/NjyAomwYUVHbjFtn95KlhzW-o5nf6p2HcL5iCaHY4X4",
+          "scope": "pisp aisp",
+          "scopes": "pisp aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "NjyAomwYUVHbjFtn95KlhzW-o5nf6p2HcL5iCaHY4X4",
+          "client_secret": "svF5x-OWIG05yLo-0tntdqtbnQ_VhrizzcS2R-ijEgUwEkR-RBux2ylRuSkdoiht",
+          "client_name": "WeCreateIt, s.r.o.",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "25a59549-9587-4389-9e0a-ac24cf719a32"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-01T10:14:10.753250Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "293c9e77-a72a-4217-b772-98dd59a65bfe"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "DCIT-PSD2-Client-A",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Wed, 01 Jul 2026 10:14:09 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,Content-Encoding,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,X-authorization-restriction,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "bae5ee93-b931-45db-93ac-1167d25f36b9",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "3e362033a5b56869",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "736001455b3ecf52",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0",
+          "server-timing": "dtSInfo;desc=\"0\", dtRpid;desc=\"1587061075\"",
+          "set-cookie": "dtCookieistqrc7a=v_4_srv_4_sn_F4BEB887E7342BE9CADB6017A52B6795_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_1; Path=/; Domain=.creditasgroup.cz"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYWl0Z2d3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0LzUxZGY4N2YzMmM1ZTQ3MTY4MjViMzM5YzU2OGI4OGM2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI3bFU2cjZnTGt0ajZxQlRlb3o2TzlTZ1BobzUwZGNwZkRWZnJEcFIxMXRNIiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3ODI5MDA4NDksImF6cCI6IjdsVTZyNmdMa3RqNnFCVGVvejZPOVNnUGhvNTBkY3BmRFZmckRwUjExdE0iLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjo0OTM2NTAwODQ5LCJpYXQiOjE3ODI5MDA4NDksImp0aSI6IjY3YWVjNjcxLWQzODctNGZkNC1hMjU5LTRjN2IyNWM0NTg3MSIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.D7yJFzn_RVDu0HJth0UuSWYSuUzDtXRyKuEhszHbdvwIft6wqfdkICDgCWPIdaDdlSjcW3Z4EOiwnMD2H4FnMvFgJWFsrRwuEZhu5RGM2y3fZmLqJeor7Z-wS6z0bcaABmLQeZgNsiVfXJSGY0kAKRxPp5rzvHRna3cAlL64N0VY3fCX-2axLNNJCtP7-5D4elGq-DQuPAz1ygq7WOIR9cNsa8JlW1MdK6kThLlgZG2VrPBS7IYa5MvftY_HGCtso5ORigzQpjqgmtXfAYQSPdDxNTy_zvuiHYNHb2LC3VBuJxVXxO32boQioOwHW6a0F2d3MHl9TO3GHBLJc9skqw",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1782900849",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/7lU6r6gLktj6qBTeoz6O9SgPho50dcpfDVfrDpR11tM",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "7lU6r6gLktj6qBTeoz6O9SgPho50dcpfDVfrDpR11tM",
+          "client_secret": "FNgN2_vFAyDuDGxzSJ7vvNa8X48b1BxQQIFTBbqTrYG6FmHs3tf4ahrwDGfY4lzL",
+          "client_name": "DCIT-PSD2-Client-A",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "293c9e77-a72a-4217-b772-98dd59a65bfe"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-01T10:15:54.450270Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "97f5f1f5-86fd-4027-84af-6afdc433881e"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "DCIT-PSD2-Client-P",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "pisp",
+          "scopes": "pisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Wed, 01 Jul 2026 10:15:53 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,Content-Encoding,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,X-authorization-restriction,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "08130095-fc67-4475-8ae0-a4c2b5015f21",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "2e487524669341d8",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "f7ae2d3de3d4c7f5",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0",
+          "server-timing": "dtSInfo;desc=\"0\", dtRpid;desc=\"-2017238900\"",
+          "set-cookie": "dtCookieistqrc7a=v_4_srv_4_sn_68D859BF394521F840E281221EE7CB92_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_1; Path=/; Domain=.creditasgroup.cz"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYWl0Z2d3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0LzUxZGY4N2YzMmM1ZTQ3MTY4MjViMzM5YzU2OGI4OGM2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJvRVRHczdWU1FzT2tCQnlyS1ZrRWgtdVNMa1dIbURBdHViZ3duWDJDeXc0IiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3ODI5MDA5NTMsImF6cCI6Im9FVEdzN1ZTUXNPa0JCeXJLVmtFaC11U0xrV0htREF0dWJnd25YMkN5dzQiLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjo0OTM2NTAwOTUzLCJpYXQiOjE3ODI5MDA5NTMsImp0aSI6ImI0NTRmOTFlLWJkMDctNGU2Ni1iODQ4LTUzOWFlNjI2NDViMSIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.o7xyVeVOaVUSOQ_AAFZD-IH777eqgzEBx6pDOu_NftHEc0CJQuvuWN71eTcrK83dmMp6P5MNBwaMiEbYKC30omoSxtBQM1TVdjpxiJU3UGt4mwkVfypjclclT7tjFjsdGNGy-ahItx9pkJCmoClPRe6-jNIQCfSU6osuDJG__L2vBCgyMHmRiFQxjUOaU4xx703oPlU11TyWyNPO8CKqkdZM7qRsDvLbZa3TjAJD6LKaI010f1CJOOjQpgUedjaCStqfq1Wal6G0GWtqTU8Md3zv4d2Am9lCzkpz88CpJrAi_jYbFMBRCpZvoFp-tptVcK7pOX5-qzriv3Dvk7-thw",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1782900953",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/oETGs7VSQsOkBByrKVkEh-uSLkWHmDAtubgwnX2Cyw4",
+          "scope": "pisp",
+          "scopes": "pisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "oETGs7VSQsOkBByrKVkEh-uSLkWHmDAtubgwnX2Cyw4",
+          "client_secret": "gyqsj2z4Aoc4OysUuViEMokCXd-jjZD3rTLII_XjXoD_mpcwiy3FVDpsvQT_H1ZG",
+          "client_name": "DCIT-PSD2-Client-P",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "97f5f1f5-86fd-4027-84af-6afdc433881e"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-01T10:16:04.942831Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "fd1f6aa7-7977-4e6c-801a-5295660f9e0b"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "DCIT-PSD2-Client-AP",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp pisp",
+          "scopes": "aisp pisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Wed, 01 Jul 2026 10:16:04 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,Content-Encoding,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,X-authorization-restriction,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "ce6f8963-634d-4169-8b06-a90ec8fafadb",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "a31affd69fd6ce2d",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "1b6ee47d35c7ebef",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0",
+          "server-timing": "dtSInfo;desc=\"0\", dtRpid;desc=\"772195863\"",
+          "set-cookie": "dtCookieistqrc7a=v_4_srv_4_sn_C9B45771D2EC25B45E0381EDA3EE2B11_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_1; Path=/; Domain=.creditasgroup.cz"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYWl0Z2d3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0LzUxZGY4N2YzMmM1ZTQ3MTY4MjViMzM5YzU2OGI4OGM2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJyYUhJM2RNZHNVQ2lVVkk3V0dtMW1ydk81UExLTWJqUTBpbUxhYXg0clNRIiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3ODI5MDA5NjMsImF6cCI6InJhSEkzZE1kc1VDaVVWSTdXR20xbXJ2TzVQTEtNYmpRMGltTGFheDRyU1EiLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjo0OTM2NTAwOTYzLCJpYXQiOjE3ODI5MDA5NjMsImp0aSI6ImNlZDI5YWUxLTNjNDctNDVmMi1hNWMzLTYzYmRiYzU0YmViMCIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.mxaGUHOsUN8w3Vrq4nV1RNbugMmCWos0j29kbnL6F282qfVjfzBT4dvSevmDOHjUFGHM0Tr9kbIzC4AOIA8SrqGA7PIBjhxtqDHsqhWMmhy5GueYvn1eZIqi2rGqcwr2z4U1xBNBFrAd8AapCMdDyWo_6nUGRQefCNABaGFmVqFzDWGYMv3mMZeIA5E42yKjHancm11Hyknq1BrDYC6nRjFzozcRp6y7aLtecEIt3BIXRZV84SsM6bmx_fibLD8sQijLVZTNmndRe4S8ifXPbchvOTje0XQque-ZpHkIpwqLs9nMkmEBjKqvvg0XjARHruWL7YUy8I4AWwfSAHsHzQ",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1782900963",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/raHI3dMdsUCiUVI7WGm1mrvO5PLKMbjQ0imLaax4rSQ",
+          "scope": "pisp aisp",
+          "scopes": "pisp aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "raHI3dMdsUCiUVI7WGm1mrvO5PLKMbjQ0imLaax4rSQ",
+          "client_secret": "EhKn95pPUAVDu_jTsC1sFGJ3lpwPV9CzcEiCYoaGNpF_3v8wzNYxtZ8SgsUGdSiC",
+          "client_name": "DCIT-PSD2-Client-AP",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "fd1f6aa7-7977-4e6c-801a-5295660f9e0b"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-09T12:58:59.977811Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "2f3312f2-18c2-4ad4-825d-cf3777f2694c"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "Brand New Company",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp pisp",
+          "scopes": "aisp pisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Thu, 09 Jul 2026 12:58:59 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,Content-Encoding,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,X-authorization-restriction,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "0c584e25-f00f-4fdc-bff4-66502dc759d7",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "51bddb8a91e6b64a",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "a016b422dc481d23",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0",
+          "server-timing": "dtSInfo;desc=\"0\", dtRpid;desc=\"88589475\"",
+          "set-cookie": "dtCookieistqrc7a=v_4_srv_6_sn_03CBF280254BC87A780073CC1BD5A741_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_1; Path=/; Domain=.creditasgroup.cz"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiI5NmQwYWIyYS04MDhkLTQyMTItYjAyOS03NGQxNWM1ZDkxMzEiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI3QlhhTk9MRlZxM3oxRmpDWmdjQzk2VGo0Rm5lVGlNV2czRWMzejVySEQwIiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3ODM2MDE5MzksImF6cCI6IjdCWGFOT0xGVnEzejFGakNaZ2NDOTZUajRGbmVUaU1XZzNFYzN6NXJIRDAiLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjo0OTM3MjAxOTM5LCJpYXQiOjE3ODM2MDE5MzksImp0aSI6IjY5YWZkM2NjLTExY2QtNDg4Ni1hZDM5LWRmN2YwZjg3Zjg1MCIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.ttAtgtZqVoVX0MPp0B9pkPT2TnPNK1vWQwleDnwHaoqSbJorvm1rPZ7JpOjcr8O_uUleM_VSWLorh3k3yS9XBewQzCblxPSc0ARugWUrFsaM7PAM4F3qWgj4qDyR0Y2EAzxkFQLEFWN-7M03JxlhwNC_qymXryf2Hqoc9oU746hNlxqCtAxalSsccLedylWGHt_DvseAYTKzpYMbpkDcZUgYpP2mStXdYkR1PAEy2Zu_osYkP6DUQxrgLeFylBXYfz14rW5xoXalTfAqUvCOlJ3oaoMj0BGx63kAZC_TWUP2K0boDES1qOQBejObXPKNiqPTkSoIXaEGQXE1qURZDg",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1783601939",
+          "registration_client_uri": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/oauth2/register/7BXaNOLFVq3z1FjCZgcC96Tj4FneTiMWg3Ec3z5rHD0",
+          "scope": "pisp aisp",
+          "scopes": "pisp aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "7BXaNOLFVq3z1FjCZgcC96Tj4FneTiMWg3Ec3z5rHD0",
+          "client_secret": "_huwAWFGKpOnV8ih8RVZlyMBHorxv1AASSLwdME_9rsMvtP9NsILsckjtXQ9aTcc",
+          "client_name": "Brand New Company",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "2f3312f2-18c2-4ad4-825d-cf3777f2694c"
+        }
+      }
+    }
+  ]
+}

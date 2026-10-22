@@ -1,0 +1,171 @@
+{
+  "registrations": [
+    {
+      "timestamp": "2025-12-06T17:37:27.148123Z",
+      "request": {
+        "url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "00000000-0000-0000-0000-000000000000"
+        },
+        "body": {
+          "client_name": "Farma zvířat, s.r.o.",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token"
+          ],
+          "response_types": [
+            "code"
+          ],
+          "scope": "aisp",
+          "token_endpoint_auth_method": "client_secret_basic"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Sat, 06 Dec 2025 17:37:26 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "00000000-0000-0000-0000-000000000000",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "00000000",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "00000000-0000-0000-0000-000000000000",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0"
+        },
+        "body": {
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYXRzdGd3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0L2IzNDIyOTg5MWNkNzQ1NzlhZjZmMWQ0MWM4YWExZmY4IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJsaERMWEVXZUxURDFyQzFmaEVBOUc0alBWXzJXUzY1ODlvOEpLZTFKbE1NIiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3NjU5Njc4NzcsImF6cCI6ImxoRExYRVdlTFREMXJDMWZoRUE5RzRqUFZfMldTNjU4OW84SktlMUpsTU0iLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjo0OTE5NTY3ODc3LCJpYXQiOjE3NjU5Njc4NzcsImp0aSI6IjM0MTAwMTA4LTY3MWEtNDI1ZC04ZTM4LTE0ZmZkMTlmMzVhZiIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.F4n7u7TguoipvGm5WL8G7jVrbaEtFcEsLQpWIiVu8N_Mhd6-VNAzlMjjtLhN_l_n9f4qSQoJqu_HK1BF5T3TvSTp68oyZmLsq0v7VTvbRPZS3Py2MotXXl5sabUxlDbYk6ORKiTMfo06Ybi-B4gNg-AVKmYlDbznec3ZjuiRWfBQIxGIZ6HZByZA_bopZPnZ3CoUFA-gz2TcI1SAkm-aHYKSSsCdE7oxGamjwmvOAIGZiscnFQQMbSx6w7o4aCIS4Xba7b5QEzg2qYUvCDXtUrLjCM_7Q430AGctk7USGhAx3t_fE2YkCcTuj9NEODNIPsoR4pgeuKZC8fEKFZPrBQ",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1765967877",
+          "registration_client_uri": "https://apigw.int.tst.aiv.gwc.az.creditasgroup.cz/oauth2/register/lhDLXEWeLTD1rC1fhEA9G4jPV_2WS6589o8JKe1JlMM",
+          "scope": "aisp",
+          "scopes": "aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "lhDLXEWeLTD1rC1fhEA9G4jPV_2WS6589o8JKe1JlMM",
+          "client_secret": "QGjCdqDnTozMGJkCz88p2iau2jNaqRm-f5Fy_Nw3QnL7itgnGWYKFmwXpOMaSYax",
+          "client_name": "Farma zvířat, s.r.o.",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "authorization_code"
+          ]
+        }
+      }
+    },
+    {
+      "timestamp": "2025-12-17T22:41:02.158109Z",
+      "request": {
+        "url": "https://apigw.dmz.tst.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "headers": {
+          "X-Client-Cert": "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",
+          "Content-Type": "application/json",
+          "X-Request-ID": "3156c08d-71ed-427b-8c95-a28755480dcd"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "client_name": "Půjčovna peněz, s.r.o.",
+          "contact": "info@example.com",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "scope": "aisp pisp",
+          "scopes": "aisp pisp",
+          "response_types": [
+            "code"
+          ],
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          "jwks_uri": "https://localhost:3000/jwks"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "date": "Wed, 17 Dec 2025 22:41:02 GMT",
+          "content-type": "application/json;charset=UTF-8",
+          "transfer-encoding": "chunked",
+          "connection": "keep-alive",
+          "access-control-allow-origin": "",
+          "access-control-allow-methods": "POST",
+          "x-content-type-options": "nosniff",
+          "pragma": "no-cache",
+          "access-control-allow-headers": "authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction,apikey,Internal-Key,X-B3-TraceId,X-CorrelationId,X-B3-SpanId,X-B3-ParentSpanId,X-AppVersion,X-Assertion-Client,X-SessionId,X-Business-Process,X-authorization-operation,X-Assertion-Employee,X-partyid,x-clientIp,tm-device-tag,tm-session-sid,ResponseVersion,X-gen-secret-key,X-message-id,X-key-enc-alg,X-data-enc-alg,X-hash-alg,Authorization",
+          "x-frame-options": "DENY",
+          "activityid": "47188ff6-53cb-4979-95a2-70bbea22b9b8",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "x-b3-spanid": "1cf0265d61adb050",
+          "access-control-allow-credentials": "true",
+          "vary": "Access-Control-Request-Headers, Access-Control-Request-Method, Origin",
+          "x-b3-traceid": "20e53d4145e97f1b",
+          "apim-backend-origin": "true",
+          "expires": "0",
+          "x-xss-protection": "0"
+        },
+        "body": {
+          "application_type": "web",
+          "authorization_redirect_uris": [
+            "https://localhost:3000/authorization/redirect"
+          ],
+          "registration_access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYXRzdGd3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0L2IzNDIyOTg5MWNkNzQ1NzlhZjZmMWQ0MWM4YWExZmY4IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJZY0hTaTJBYXBLRWdYWHM2VmVNSjI0dkZjd3JpdHRwZm14dWY0QmZ3SWxVIiwiYXVkIjoiY2xpZW50LnJlYWQiLCJuYmYiOjE3NjYwMTEyNjIsImF6cCI6IlljSFNpMkFhcEtFZ1hYczZWZU1KMjR2RmN3cml0dHBmbXh1ZjRCZndJbFUiLCJzY29wZSI6WyJjbGllbnQucmVhZCJdLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwiZXhwIjo0OTE5NjExMjYyLCJpYXQiOjE3NjYwMTEyNjIsImp0aSI6IjhlZGViZjAxLTk4ZTktNGI1Ny05NzExLTA5NWJhMjEwYTYxZSIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.pK-72zRkwvuUpRG08uzYI1Gu9r0SSCKF39A7ceUq-luJBi6sm1edMergJo3t3ksVY3JvzN-w20VfH0q0Fz936HS4gEGLj5rt3fSiw2flDvV686CuhN6V7uVPGuvBBj7eKgJvwgDm6Ki8ucaiuSn5bKd7qeYOt2Xl3ppluqVrYqmoB-8l5FYk4EFI_-87SChQlS6LO38Dq5d-yEjX50VGuY2U14gCr-FIfbFdeI2hhvHUtyTIOt9qJAt1BR2YVcNmxX018cs2K9-hQuq4ix8ocI8WafkLpZpUpa5VDVOxTGJdDsBN_mhNJmKVnXEUsHvgW19MQwtnTViEmUO8Kj7tRQ",
+          "id_token_signed_response_alg": "RS256",
+          "client_secret_expires_at": "0",
+          "token_endpoint_auth_method": "client_secret_basic",
+          "client_id_issued_at": "1766011261",
+          "registration_client_uri": "https://apigw.int.tst.aiv.gwc.az.creditasgroup.cz/oauth2/register/YcHSi2AapKEgXXs6VeMJ24vFcwrittpfmxuf4BfwIlU",
+          "scope": "pisp aisp",
+          "scopes": "pisp aisp",
+          "response_types": [
+            "code"
+          ],
+          "client_id": "YcHSi2AapKEgXXs6VeMJ24vFcwrittpfmxuf4BfwIlU",
+          "client_secret": "f8sbzV6pK_AqG3kZY8PszA6ffckPIrYHZnKq2BznbI37pkWNTQ6EcdkrrPiJXhYs",
+          "client_name": "Půjčovna peněz, s.r.o.",
+          "contact": "info@example.com",
+          "redirect_uris": [
+            "https://localhost:3000/callback"
+          ],
+          "grant_types": [
+            "refresh_token",
+            "client_credentials",
+            "authorization_code"
+          ]
+        },
+        "request_headers": {
+          "X-Client-Cert": "MIII9zCCBt+gAwIBAgIJA1Ga8pKetC86MA0GCSqGSIb3DQEBCwUAMH8xKDAmBgNVBAMMH0kuQ0EgVGVzdCBUTFMgRVYgQ0EvUlNBIDA1LzIwMjIxLTArBgNVBAoMJFBydm7DrSBjZXJ0aWZpa2HEjW7DrSBhdXRvcml0YSwgYS5zLjEXMBUGA1UEYQwOTlRSQ1otMjY0MzkzOTUxCzAJBgNVBAYTAkNaMB4XDTI1MTExNDA5NDYyMFoXDTI2MTExNDA5NDYyMFowggEHMQswCQYDVQQGEwJDWjEdMBsGA1UECAwUSGxhdm7DrSBtxJtzdG8gUHJhaGExEDAOBgNVBAcMB1ByYWhhIDgxDjAMBgNVBBEMBTE4NjAwMRowGAYDVQQJDBFTb2tvbG92c2vDoSA2NzUvOTEcMBoGA1UECgwTQmFua2EgQ1JFRElUQVMgYS5zLjEdMBsGA1UEDwwUUHJpdmF0ZSBPcmdhbml6YXRpb24xEzARBgsrBgEEAYI3PAIBAxMCQ1oxETAPBgNVBAUTCDYzNDkyNTU1MRswGQYDVQRhDBJQU0RDWi1DTkItNjM0OTI1NTUxGTAXBgNVBAMMEHRlc3QuY3JlZGl0YXMuY3owggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvmcGJkuDeOPKaY2RBkokJVH63pGbWlEO8tdb40VzNxGq6ISYtT/q1kvlyp0ToC6svgECxpVmHAsZzwnYKh/r3m86skQc/wHhW+KndbIMeDalaRMwoRcC3dtg9yeeGZrcHRqHaEAqbiCWs/OxpR5S9NoMydPyF0i02vYt/xy8Zq48gXtJUv3JI4af1uxng2T6ZdqgMdkmxOxbjEUVby972zDAHpIi8YW/1PN0KSooSmo6yt4fwh06empS0sS24JQQnSc8XN0vIZT+l5Qd7+ditG60NJiYhEbBnAEoAHielPxTLu6NrMFk11coWH5fLiAsWqrPGNtX6zx17m+FJeEzVAgMBAAGjggPqMIID5jAiBgVngQwDAQQZMBcTA1BTRBMCQ1oMDENOQi02MzQ5MjU1NTAbBgNVHREEFDASghB0ZXN0LmNyZWRpdGFzLmN6MAwGA1UdEwEB/wQCMAAwTwYDVR0gBEgwRjAHBgVngQwBATAwBg0rBgEEAYG4SAoDKAEBMB8wHQYIKwYBBQUHAgEWEWh0dHA6Ly93d3cuaWNhLmN6MAkGBwQAi+xAAQQwXgYDVR0fBFcwVTAooCagJIYiaHR0cDovL3Rlc3RxLmljYS5jei90cWN3MjJfcnNhLmNybDApoCegJYYjaHR0cDovL3Rlc3RxMi5pY2EuY3ovdHFjdzIyX3JzYS5jcmwwagYIKwYBBQUHAQEEXjBcMC4GCCsGAQUFBzAChiJodHRwOi8vdGVzdHEuaWNhLmN6L3RxY3cyMl9yc2EuY2VyMCoGCCsGAQUFBzABhh5odHRwOi8vdG9jc3AuaWNhLmN6L3RxY3cyMl9yc2EwDgYDVR0PAQH/BAQDAgWgMIIBAAYIKwYBBQUHAQMEgfMwgfAwCAYGBACORgEBMBMGBgQAjkYBBjAJBgcEAI5GAQYDMFgGBgQAjkYBBTBOMCUWH2h0dHBzOi8vdGVzdHEuaWNhLmN6L3Bkc19jcy5wZGYTAmNzMCUWH2h0dHBzOi8vdGVzdHEuaWNhLmN6L3Bkc19lbi5wZGYTAmVuMHUGBgQAgZgnAjBrMEwwEQYHBACBmCcBAQwGUFNQX0FTMBEGBwQAgZgnAQIMBlBTUF9QSTARBgcEAIGYJwEDDAZQU1BfQUkwEQYHBACBmCcBBAwGUFNQX0lDDBNDemVjaCBOYXRpb25hbCBCYW5rDAZDWi1DTkIwHwYDVR0jBBgwFoAU4+6eqSwGvI60H83GOkuAjTkHVykwHQYDVR0OBBYEFJdgEg8BgTbUHNNifda27oR9DS5MMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjCCAQMGCisGAQQB1nkCBAIEgfQEgfEA7wB1AGLpAGAEoweVWnVEtNWEqWJoyh1uRYWt8JFt/l/cHwTbAAABmoHCQ9QAAAQDAEYwRAIgM0AOCr9FHD+uvW40jWO7P2OWx7sYf0I3Dd0vBovMkXYCICKdstfhOSBqzh8fxe6LRk7Xa4jXQ5IvieoOYzp4uMRmAHYAsMyD5aX5fWuvfAnMKEkEhyrH6IsTLGNQt8b9JuFsbHcAAAGagcJGuwAABAMARzBFAiAnxglGtfBvA877YhOWN5NYtK3ehXyxXgQk69OpWtnS9gIhALU2QP3znCe20XORzXlsie+FAwzaPpk1j6nra9UTVhxQMA0GCSqGSIb3DQEBCwUAA4ICAQAiQo8e/42bqImKhNos/UHPBVMpxXhBwYDu8T2/qxxokEFXjEloB2IG6pI94eK14bkuHDbruJFSLQkup2Sj+72ok/Mez8jv2rkc3DRTQqYToUXQcZXJ0LI0TahMlw8CDyUkxVdZQkCBGxhcPs5bt7eeq5Lh0fX8dK0Cwak9mVoejrfCH83pzty2Pblk6Im7iDsc87edk1l3jRzevLOq4UsX4mpdCo0mJdEBABOTRLv+g2H9FjTmdyLxZJ7JrlGEMvY99HtCAy31IWzBThhPiD2rSIHtBRCW1OwRUNE5C2J2QoqkSg84KIfSRpBYRaV2pmdLkxaMl040mWGAQKVk3G8sMWIZWJxH7tj5uJluo338kiH6xgfL7SJpK7YwjjhO+tCl1iiBKaBtPQtfWQByv8GVCvhVjgTzS4Y8MTLJSbQpKxOEbzJUv0t4rOoY0HoAszr0WNvzMPtvuxG+55Fgo89a6uCFix1bjwKHkb2pwVnfWuThUkTBUlVrzUByYEElmTZ6uPgrxjeBKkzbhUu8N26YBff1KK2nVPBqvfiqlrU0JcOkM1+AXy8VLtvQeeDo0q7ytELt7/yC6JbDc07G7i2/49xh6bLj2SAlPYP+mREyRfrOpXwVMgO1PJ9hvrz3YCp8Kg3zrWgLX7TOcK86cEPyFnodMLoTMEs3ASBExGWeAg==",
+          "Content-Type": "application/json",
+          "X-Request-ID": "3156c08d-71ed-427b-8c95-a28755480dcd"
+        }
+      }
+    }
+  ]
+}

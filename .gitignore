@@ -1,0 +1,13 @@
+.states
+*.db
+.web
+.web/
+.states/
+assets/external/
+__pycache__/
+*.py[cod]
+.reflex/
+Configurations/ITG/entra_config.json
+Configurations/TST/entra_config.json
+Tests
+Templates

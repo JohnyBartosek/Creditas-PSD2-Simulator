@@ -1,0 +1,23 @@
+{
+    "application_type": "web",
+    "authorization_redirect_uris": [
+      "https://localhost:3000/authorization/redirect"
+    ],
+    "client_name": "Company, s.r.o.",
+    "contact": "info@example.com",
+    "token_endpoint_auth_method": "client_secret_basic",
+    "scope": "aisp",
+    "scopes": "aisp",
+    "response_types": [
+      "code"
+    ],
+    "redirect_uris": [
+      "https://localhost:3000/callback"
+    ],
+    "grant_types": [
+      "authorization_code",
+      "refresh_token",
+      "client_credentials"
+    ],
+    "jwks_uri": "https://localhost:3000/jwks"
+  }

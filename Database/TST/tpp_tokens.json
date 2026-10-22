@@ -1,0 +1,16 @@
+{
+  "tokens": [
+    {
+      "client_id": "lhDLXEWeLTD1rC1fhEA9G4jPV_2WS6589o8JKe1JlMM",
+      "user": 53068,
+      "refresh_token": "kyVJBGwgMRAx0iQOOBTkxDLECfYBAJTmJtjYRQQXYAYjcDnUdI9JD0gzBMniUJxWhdwj2sMU5gqJmLChD19Y89fe6brGs9uLLQBgIWrX3IVlGm9UTjExZshKCBEpsEVi",
+      "access_token": "eyJraWQiOiJodHRwczovL2NyZG5wcmludGNvYXRzdGd3Y2t2MDIudmF1bHQuYXp1cmUubmV0L2tleXMvay1jb2Etand0L2IzNDIyOTg5MWNkNzQ1NzlhZjZmMWQ0MWM4YWExZmY4IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI1MzA2OCIsImF1ZCI6ImFpc3AiLCJuYmYiOjE3Njk1OTgxODAsImF6cCI6ImxoRExYRVdlTFREMXJDMWZoRUE5RzRqUFZfMldTNjU4OW84SktlMUpsTU0iLCJzY29wZSI6ImFpc3AiLCJpc3MiOiJodHRwczovL2NyZWRpdGFzLmN6IiwibmFtZSI6Ik5pY28gR29vYmVydCIsImV4cCI6MTc2OTU5ODQ4MCwiYmFua19wcm9maWxlX2lkcyI6WyI1MzA2OCJdLCJpYXQiOjE3Njk1OTgxODAsImp0aSI6ImUxODRmMTJiLWE4NjUtNGJmMy05NDEwLTc5NmQzMTUxMzc4NCIsImNsaWVudF9vcmdfaWQiOiJQU0RDWi1DTkItNjM0OTI1NTUifQ.tNucOFpSzTOwRIF_29Ichux6KLK46pCpghdZPgX2LI7CkcKhYz_RzSBmvcxe7sjk5GcXHD5rlH237f915VF09Ep_auOh5Oco0V69C2W0jImRXTsIe76aWLT0Xinycwd0nQLZkygcuOyMSTB9y1w06blDYhWowp7cplU5Dt9pKwppnIsAcrP3p_LFgbmzWllwVmfUyZG1bKGfDL2wgX8NGDmAm8aFkE4APZRL8Y1WHI-g4-mSA2UudVnrTUEEdu7RbzojdE_UaGBuRmPPjDr-hCxIrDV2looNlHan982cAl_4ECOj-OBiJ29JZKUTc_SjAIK6PgHGF1i6zMWjCJjLvw",
+      "scope": "aisp",
+      "token_type": "Bearer",
+      "expires_in": "298",
+      "redirect_uri": "https://localhost:3000/callback",
+      "timestamp": "2026-01-28T11:03:01.600490Z",
+      "refresh_token_created": "2026-01-28T11:03:01.600490Z"
+    }
+  ]
+}

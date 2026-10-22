@@ -1,0 +1,190 @@
+{
+  "accounts": [
+    {
+      "partyId": "91669",
+      "partyName": "Řehoř Řeřicha",
+      "iban": "CZ5622500000004121931301",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "93806",
+      "partyName": "Neupravuj PSD2 Subjektek",
+      "iban": "CZ2422500000004039432407",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "93806",
+      "partyName": "Neupravuj PSD2 Subjektek",
+      "iban": "CZ2922500000004457772850",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "93806",
+      "partyName": "Neupravuj PSD2 Subjektek",
+      "iban": "CZ1622500000004482127650",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "93806",
+      "partyName": "Neupravuj PSD2 Subjektek",
+      "iban": "CZ8422500000004646700506",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "93806",
+      "partyName": "Neupravuj PSD2 Subjektek",
+      "iban": "CZ0722500000004329425950",
+      "currency": "EUR"
+    },
+    {
+      "partyId": "93806",
+      "partyName": "Neupravuj PSD2 Subjektek",
+      "iban": "CZ3222500000004195720603",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "93806",
+      "partyName": "Neupravuj PSD2 Subjektek",
+      "iban": "CZ6722500000004743665407",
+      "currency": "USD"
+    },
+    {
+      "partyId": "97639",
+      "partyName": "Soukromý PSD2 Subjektík",
+      "iban": "CZ0422500000004238950709",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "97639",
+      "partyName": "Soukromý PSD2 Subjektík",
+      "iban": "CZ4422500000004342354608",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "97639",
+      "partyName": "Soukromý PSD2 Subjektík",
+      "iban": "CZ8522500000004163636802",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "97639",
+      "partyName": "Soukromý PSD2 Subjektík",
+      "iban": "CZ3222500000004772075203",
+      "currency": "PLN"
+    },
+    {
+      "partyId": "97639",
+      "partyName": "Soukromý PSD2 Subjektík",
+      "iban": "CZ3722500000004008171304",
+      "currency": "USD"
+    },
+    {
+      "partyId": "97639",
+      "partyName": "Soukromý PSD2 Subjektík",
+      "iban": "CZ2822500000004348704904",
+      "currency": "EUR"
+    },
+    {
+      "partyId": "97639",
+      "partyName": "Soukromý PSD2 Subjektík",
+      "iban": "CZ2322500000004764482108",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "97639",
+      "partyName": "Soukromý PSD2 Subjektík",
+      "iban": "CZ2722500000004780320002",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "101694",
+      "partyName": "Elizej DIFA Doubek",
+      "iban": "CZ2522500000004517945902",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "101694",
+      "partyName": "Elizej DIFA Doubek",
+      "iban": "CZ1122500000004277953507",
+      "currency": "USD"
+    },
+    {
+      "partyId": "101694",
+      "partyName": "Elizej DIFA Doubek",
+      "iban": "CZ7122500000004261362905",
+      "currency": "EUR"
+    },
+    {
+      "partyId": "101694",
+      "partyName": "Elizej DIFA Doubek",
+      "iban": "CZ8322500000004933963405",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "101694",
+      "partyName": "Elizej DIFA Doubek",
+      "iban": "CZ9822500000004010472501",
+      "currency": "EUR"
+    },
+    {
+      "partyId": "101718",
+      "partyName": "Fidel DIFA Husák",
+      "iban": "CZ7522500000004400083309",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "101718",
+      "partyName": "Fidel DIFA Husák",
+      "iban": "CZ7322500000004033460108",
+      "currency": "EUR"
+    },
+    {
+      "partyId": "101718",
+      "partyName": "Fidel DIFA Husák",
+      "iban": "CZ2122500000004295899006",
+      "currency": "USD"
+    },
+    {
+      "partyId": "101718",
+      "partyName": "Fidel DIFA Husák",
+      "iban": "CZ5422500000004334621200",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "101718",
+      "partyName": "Fidel DIFA Husák",
+      "iban": "CZ8022500000004689386107",
+      "currency": "EUR"
+    },
+    {
+      "partyId": "101696",
+      "partyName": "Sigfríd DIFA Buchta",
+      "iban": "CZ0322500000004219939600",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "101696",
+      "partyName": "Sigfríd DIFA Buchta",
+      "iban": "CZ8422500000004054602806",
+      "currency": "CZK"
+    },
+    {
+      "partyId": "101696",
+      "partyName": "Sigfríd DIFA Buchta",
+      "iban": "CZ4422500000004531517509",
+      "currency": "EUR"
+    },
+    {
+      "partyId": "101696",
+      "partyName": "Sigfríd DIFA Buchta",
+      "iban": "CZ2422500000004912442301",
+      "currency": "EUR"
+    },
+    {
+      "partyId": "101696",
+      "partyName": "Sigfríd DIFA Buchta",
+      "iban": "CZ7922500000004467104805",
+      "currency": "USD"
+    }
+  ]
+}

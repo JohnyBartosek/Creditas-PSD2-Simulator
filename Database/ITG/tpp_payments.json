@@ -1,0 +1,342 @@
+{
+  "payments": [
+    {
+      "instructionIdentification": "NejakeID20261008222936",
+      "transactionIdentification": "46800",
+      "amount + currency": "999.99 CZK",
+      "requestedExecutionDate": "2026-10-08",
+      "dateCreated": "2026-10-08T20:31:27.070453Z",
+      "status": "ACSC",
+      "code": "DMCT",
+      "instructionPriority": "NORM",
+      "signId": "",
+      "debtorAccountId": "87625",
+      "debtorIban": "CZ2522500000004517945902",
+      "partyId": "101694",
+      "creditorIban": "CZ8322500000004933963405"
+    },
+    {
+      "instructionIdentification": "NejakeID20261008225443",
+      "transactionIdentification": "46804",
+      "amount + currency": "24.0 CZK",
+      "requestedExecutionDate": "2026-10-08",
+      "dateCreated": "2026-10-08T20:55:02.899976Z",
+      "status": "ACSC",
+      "code": "DMCT",
+      "instructionPriority": "NORM",
+      "signId": "",
+      "debtorAccountId": "87625",
+      "debtorIban": "CZ2522500000004517945902",
+      "partyId": "101694",
+      "creditorIban": "CZ8322500000004933963405"
+    },
+    {
+      "instructionIdentification": "NejakeID20261008231118",
+      "transactionIdentification": "46801",
+      "amount + currency": "24.0 CZK",
+      "requestedExecutionDate": "2026-10-08",
+      "dateCreated": "2026-10-08T21:11:47.157437Z",
+      "status": "ACSC",
+      "code": "DMCT",
+      "instructionPriority": "NORM",
+      "signId": "63863",
+      "debtorAccountId": "87625",
+      "debtorIban": "CZ2522500000004517945902",
+      "partyId": "101694",
+      "creditorIban": "CZ5622500000004121931301"
+    },
+    {
+      "instructionIdentification": "NejakeID20261009000112",
+      "transactionIdentification": "46832",
+      "amount + currency": "1.0 CZK",
+      "requestedExecutionDate": "2026-10-09",
+      "dateCreated": "2026-10-08T22:02:00.788944Z",
+      "status": "CANC",
+      "code": "DMCT",
+      "instructionPriority": "NORM",
+      "signId": "63780",
+      "debtorAccountId": "29237",
+      "debtorIban": "CZ5622500000004121931301",
+      "partyId": "91669",
+      "creditorIban": "CZ2108000000004121931301"
+    },
+    {
+      "instructionIdentification": "NejakeID20261009000618",
+      "transactionIdentification": "46847",
+      "amount + currency": "1.0 CZK",
+      "requestedExecutionDate": "2026-10-09",
+      "dateCreated": "2026-10-08T22:06:33.985590Z",
+      "status": "ACSC",
+      "code": "DMCT",
+      "instructionPriority": "NORM",
+      "signId": "63781",
+      "debtorAccountId": "29237",
+      "debtorIban": "CZ5622500000004121931301",
+      "partyId": "91669",
+      "creditorIban": "CZ2522500000004517945902"
+    },
+    {
+      "instructionIdentification": "NejakeID20261009125024",
+      "transactionIdentification": "46816",
+      "amount + currency": "953.03 CZK",
+      "requestedExecutionDate": "2026-10-09",
+      "dateCreated": "2026-10-09T10:51:13.606497Z",
+      "status": "CANC",
+      "code": "DMCT",
+      "instructionPriority": "NORM",
+      "signId": "63938",
+      "debtorAccountId": "87625",
+      "debtorIban": "CZ2522500000004517945902",
+      "partyId": "101694",
+      "creditorIban": "CZ3222500000004195720603"
+    },
+    {
+      "instructionIdentification": "NejakeID20261009130142",
+      "transactionIdentification": "46873",
+      "amount + currency": "953.03 CZK",
+      "requestedExecutionDate": "2026-10-09",
+      "dateCreated": "2026-10-09T11:08:19.143231Z",
+      "status": "ACCP",
+      "code": "DMCT",
+      "instructionPriority": "NORM",
+      "signId": "63992",
+      "debtorAccountId": "87625",
+      "debtorIban": "CZ2522500000004517945902",
+      "partyId": "101694",
+      "creditorIban": "CZ3222500000004195720603",
+      "requestBody": {
+        "paymentIdentification": {
+          "instructionIdentification": "NejakeID20261009130142"
+        },
+        "paymentTypeInformation": {
+          "instructionPriority": "NORM",
+          "serviceLevel": {
+            "code": "DMCT"
+          }
+        },
+        "amount": {
+          "instructedAmount": {
+            "value": 953.03,
+            "currency": "CZK"
+          }
+        },
+        "requestedExecutionDate": "2026-10-09",
+        "debtorAccount": {
+          "identification": {
+            "iban": "CZ2522500000004517945902"
+          },
+          "currency": "CZK"
+        },
+        "creditorAccount": {
+          "identification": {
+            "iban": "CZ3222500000004195720603"
+          },
+          "currency": "CZK"
+        },
+        "remittanceInformation": {
+          "unstructured": "Zpráva pro příjemce platby",
+          "structured": {
+            "creditorReferenceInformation": {
+              "reference": [
+                "VS:7418529630",
+                "SS:1234567890",
+                "KS:0308"
+              ]
+            }
+          }
+        },
+        "x-paymentNotes": {
+          "noteForRequestor": "Zaplatil jsem kamarádovi.",
+          "noteForBank": "Text zprávy pro banku",
+          "narrative": "Další komentáře k transakci"
+        }
+      }
+    },
+    {
+      "instructionIdentification": "1687413461",
+      "transactionIdentification": "",
+      "amount + currency": "1.0 CZK",
+      "requestedExecutionDate": "2026-10-09",
+      "dateCreated": "2026-10-09T13:41:09.105873Z",
+      "status": "DRAFT",
+      "code": "",
+      "instructionPriority": "INST",
+      "signId": "",
+      "debtorAccountId": "87625",
+      "debtorIban": "CZ2522500000004517945902",
+      "partyId": "101694",
+      "creditorIban": "CZ5622500000004121931301",
+      "requestBody": {
+        "paymentIdentification": {
+          "instructionIdentification": "1687413461"
+        },
+        "paymentTypeInformation": {
+          "instructionPriority": "INST",
+          "serviceLevel": {
+            "code": "DMCT"
+          }
+        },
+        "amount": {
+          "instructedAmount": {
+            "value": 1.0,
+            "currency": "CZK"
+          }
+        },
+        "requestedExecutionDate": "2026-10-09",
+        "debtorAccount": {
+          "identification": {
+            "iban": "CZ2522500000004517945902"
+          },
+          "currency": "CZK"
+        },
+        "creditorAccount": {
+          "identification": {
+            "iban": "CZ5622500000004121931301"
+          },
+          "currency": "CZK"
+        },
+        "remittanceInformation": {
+          "unstructured": "Zpráva pro příjemce platby",
+          "structured": {
+            "creditorReferenceInformation": {
+              "reference": [
+                "VS:7418529630",
+                "SS:1234567890",
+                "KS:0308"
+              ]
+            }
+          }
+        },
+        "x-paymentNotes": {
+          "noteForRequestor": "Zaplatil jsem kamarádovi.",
+          "noteForBank": "Text zprávy pro banku",
+          "narrative": "Další komentáře k transakci"
+        }
+      }
+    },
+    {
+      "instructionIdentification": "1",
+      "transactionIdentification": "46821",
+      "amount + currency": "1.0 USD",
+      "requestedExecutionDate": "2026-10-09",
+      "dateCreated": "2026-10-09T13:42:39.147415Z",
+      "status": "NEXT",
+      "code": "DMCT",
+      "instructionPriority": "NORM",
+      "signId": "63993",
+      "debtorAccountId": "112320",
+      "debtorIban": "CZ1122500000004277953507",
+      "partyId": "101694",
+      "creditorIban": "CZ5622500000004121931301",
+      "requestBody": {
+        "paymentIdentification": {
+          "instructionIdentification": "1"
+        },
+        "paymentTypeInformation": {
+          "instructionPriority": "NORM",
+          "serviceLevel": {
+            "code": "DMCT"
+          }
+        },
+        "amount": {
+          "instructedAmount": {
+            "value": 1.0,
+            "currency": "USD"
+          }
+        },
+        "requestedExecutionDate": "2026-10-09",
+        "debtorAccount": {
+          "identification": {
+            "iban": "CZ1122500000004277953507"
+          },
+          "currency": "USD"
+        },
+        "creditorAccount": {
+          "identification": {
+            "iban": "CZ5622500000004121931301"
+          },
+          "currency": "CZK"
+        },
+        "remittanceInformation": {
+          "unstructured": "Zpráva pro příjemce platby",
+          "structured": {
+            "creditorReferenceInformation": {
+              "reference": [
+                "VS:7418529630",
+                "SS:1234567890",
+                "KS:0308"
+              ]
+            }
+          }
+        },
+        "x-paymentNotes": {
+          "noteForRequestor": "Zaplatil jsem kamarádovi.",
+          "noteForBank": "Text zprávy pro banku",
+          "narrative": "Další komentáře k transakci"
+        }
+      }
+    },
+    {
+      "instructionIdentification": "NejakeID20261014175531",
+      "transactionIdentification": "",
+      "amount + currency": "999.99 CZK",
+      "requestedExecutionDate": "2026-10-14",
+      "dateCreated": "2026-10-14T15:56:16.699634Z",
+      "status": "DRAFT",
+      "code": "",
+      "instructionPriority": "NORM",
+      "signId": "",
+      "debtorAccountId": "34804",
+      "debtorIban": "CZ1622500000004482127650",
+      "partyId": "93806",
+      "creditorIban": "CZ2422500000004039432407",
+      "requestBody": {
+        "paymentIdentification": {
+          "instructionIdentification": "NejakeID20261014175531"
+        },
+        "paymentTypeInformation": {
+          "instructionPriority": "NORM",
+          "serviceLevel": {
+            "code": "DMCT"
+          }
+        },
+        "amount": {
+          "instructedAmount": {
+            "value": 999.99,
+            "currency": "CZK"
+          }
+        },
+        "requestedExecutionDate": "2026-10-14",
+        "debtorAccount": {
+          "identification": {
+            "iban": "CZ1622500000004482127650"
+          },
+          "currency": "CZK"
+        },
+        "creditorAccount": {
+          "identification": {
+            "iban": "CZ2422500000004039432407"
+          },
+          "currency": "CZK"
+        },
+        "remittanceInformation": {
+          "unstructured": "Zpráva pro příjemce platby",
+          "structured": {
+            "creditorReferenceInformation": {
+              "reference": [
+                "VS:7418529630",
+                "SS:1234567890",
+                "KS:0308"
+              ]
+            }
+          }
+        },
+        "x-paymentNotes": {
+          "noteForRequestor": "Zaplatil jsem kamarádovi.",
+          "noteForBank": "Text zprávy pro banku",
+          "narrative": "Další komentáře k transakci"
+        }
+      }
+    }
+  ]
+}

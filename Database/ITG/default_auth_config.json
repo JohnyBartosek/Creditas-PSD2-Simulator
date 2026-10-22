@@ -1,0 +1,6 @@
+{
+  "partyId": "97639",
+  "client_id": "DCIT-PSD2-Client-AP",
+  "redirect_uri": "https://localhost:3000/callback",
+  "accountListMode": "table"
+}

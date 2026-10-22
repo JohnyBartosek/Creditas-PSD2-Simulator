@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "partyId": "53068",
+      "name": "Nico Goobert",
+      "birthDate": "3.3.2006",
+      "username": "38435544",
+      "password": "Heslo1122*",
+      "phoneNumber": "420776843870"
+    },
+    {
+      "partyId": "111905",
+      "name": "Lionel DIFA Králíček",
+      "birthDate": "12.07.1996",
+      "username": "Pirat849710@creditas.cz",
+      "password": "Heslo1122*",
+      "phoneNumber": "00420728325206"
+    }
+  ]
+}

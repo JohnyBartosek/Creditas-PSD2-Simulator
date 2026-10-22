@@ -1,0 +1,98 @@
+{
+  "current_environment": "ITG",
+  "environments": {
+    "ITG": {
+      "oauth": {
+        "authorize_url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/oauth/v1/oauth2/authorize",
+        "token_url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/token"
+      },
+      "registration": {
+        "post_url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "get_url_template": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz:443/api/rest/ext/psd/wso2-default-version/oauth2/register/{client_id}",
+        "delete_url_template": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz:443/api/rest/ext/psd/wso2-default-version/oauth2/register/{client_id}"
+      },
+      "consents": {
+        "base_url": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz/api/rest/con/v1/psd2/consents"
+      },
+      "accounts": {
+        "list_url": "https://apigw.dmz.itg.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/v1/my/accounts"
+      },
+      "obo": {
+        "smc_base_url": "https://apigw.int.itg.aiv.gwc.az.creditasgroup.cz:443/api/rest/obo/smc"
+      },
+      "internet_banking": {
+        "login_url": "https://ui.dmz.itg.ibk.gwc.az.creditasgroup.cz/login"
+      }
+    },
+    "TST": {
+      "oauth": {
+        "authorize_url": "https://apigw.dmz.tst.aiv.gwc.az.creditasgroup.cz/api/rest/ext/oauth/v1/oauth2/authorize",
+        "token_url": "https://apigw.dmz.tst.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/token"
+      },
+      "registration": {
+        "post_url": "https://apigw.dmz.tst.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "get_url_template": "https://apigw.dmz.tst.aiv.gwc.az.creditasgroup.cz:443/api/rest/ext/psd/wso2-default-version/oauth2/register/{client_id}",
+        "delete_url_template": "https://apigw.dmz.tst.aiv.gwc.az.creditasgroup.cz:443/api/rest/ext/psd/wso2-default-version/oauth2/register/{client_id}"
+      },
+      "consents": {
+        "base_url": "https://apigw.int.tst.aiv.gwc.az.creditasgroup.cz:443/api/rest/con/wso2-default-version/v1/psd2/consents"
+      },
+      "accounts": {
+        "list_url": "https://apigw.dmz.tst.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/v1/my/accounts"
+      },
+      "obo": {
+        "smc_base_url": "https://apigw.int.tst.aiv.gwc.az.creditasgroup.cz:443/api/rest/obo/smc"
+      },
+      "internet_banking": {
+        "login_url": "https://ui.dmz.tst.ibk.gwc.az.creditasgroup.cz/login"
+      }
+    },
+    "PRE": {
+      "oauth": {
+        "authorize_url": "https://apigw.dmz.pre.aiv.gwc.az.creditasgroup.cz/api/rest/ext/oauth/v1/oauth2/authorize",
+        "token_url": "https://apigw.dmz.pre.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/token"
+      },
+      "registration": {
+        "post_url": "https://apigw.dmz.pre.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "get_url_template": "https://apigw.dmz.pre.aiv.gwc.az.creditasgroup.cz:443/api/rest/ext/psd/wso2-default-version/oauth2/register/{client_id}",
+        "delete_url_template": "https://apigw.dmz.pre.aiv.gwc.az.creditasgroup.cz:443/api/rest/ext/psd/wso2-default-version/oauth2/register/{client_id}"
+      },
+      "consents": {
+        "base_url": "https://apigw.int.pre.aiv.gwc.az.creditasgroup.cz:443/api/rest/con/wso2-default-version/v1/psd2/consents"
+      },
+      "accounts": {
+        "list_url": "https://apigw.dmz.pre.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/v1/my/accounts"
+      },
+      "obo": {
+        "smc_base_url": "https://apigw.int.pre.aiv.gwc.az.creditasgroup.cz:443/api/rest/obo/smc"
+      },
+      "internet_banking": {
+        "login_url": "https://ui.dmz.pre.ibk.gwc.az.creditasgroup.cz/login"
+      }
+    },
+    "PROD": {
+      "oauth": {
+        "authorize_url": "https://apigw.dmz.prod.aiv.gwc.az.creditasgroup.cz/api/rest/ext/oauth/v1/oauth2/authorize",
+        "token_url": "https://apigw.dmz.prod.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/token"
+      },
+      "registration": {
+        "post_url": "https://apigw.dmz.prod.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/oauth2/register",
+        "get_url_template": "https://apigw.dmz.prod.aiv.gwc.az.creditasgroup.cz:443/api/rest/ext/psd/wso2-default-version/oauth2/register/{client_id}",
+        "delete_url_template": "https://apigw.dmz.prod.aiv.gwc.az.creditasgroup.cz:443/api/rest/ext/psd/wso2-default-version/oauth2/register/{client_id}"
+      },
+      "consents": {
+        "base_url": "https://apigw.int.prod.aiv.gwc.az.creditasgroup.cz:443/api/rest/con/wso2-default-version/v1/psd2/consents"
+      },
+      "accounts": {
+        "list_url": "https://apigw.dmz.prod.aiv.gwc.az.creditasgroup.cz/api/rest/ext/psd/v1/my/accounts"
+      },
+      "obo": {
+        "smc_base_url": "https://apigw.int.prod.aiv.gwc.az.creditasgroup.cz:443/api/rest/obo/smc"
+      },
+      "internet_banking": {
+        "login_url": "https://ui.dmz.prod.ibk.gwc.az.creditasgroup.cz/login"
+      }
+    }
+  }
+}
+
