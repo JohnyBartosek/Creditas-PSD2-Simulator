@@ -16,12 +16,10 @@ Installation:
 
 3) .venv\\Scripts\\pip install -r requirements.txt
 
-4) .venv\\Scripts\\playwright install chromium
-     or
-   C:\\Users\\user\\Downloads\\Creditas-PSD2-Simulator-main\\.venv\\Scripts> .\\python.exe -m playwright install chromium
+4) .venv\\Scripts\\python.exe -m playwright install chromium
 
 5) run setup_env.bat (installs Python Oracle client)
 
-6) C:\\Users\\user\\Downloads\\Creditas-PSD2-Simulator-main\\start\_reflex.bat
+6) start\_reflex.bat
 
 7) $env:NODE\_TLS\_REJECT\_UNAUTHORIZED="1"   // back to security
