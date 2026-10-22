@@ -754,6 +754,33 @@ def _datasheet_event_row(item) -> rx.Component:
     )
 
 
+def _datasheet_request_id() -> rx.Component:
+    request_id = AppState.datasheet_selected["xrequestid"]
+    return rx.vstack(
+        rx.text("X-Request-ID", size="1", color="gray"),
+        rx.hstack(
+            rx.text(rx.cond(request_id != "", request_id, "—"), size="2"),
+            rx.cond(
+                request_id != "",
+                rx.tooltip(
+                    rx.button(
+                        "Kibana",
+                        size="1",
+                        variant="soft",
+                        on_click=AppState.open_kibana_trace(request_id),
+                    ),
+                    content="Download the X-B3-SpanId logs into the app",
+                ),
+            ),
+            spacing="2",
+            align="center",
+        ),
+        spacing="0",
+        align="start",
+        min_width="9rem",
+    )
+
+
 def _datasheet_group(title: str, facts: list[tuple[str, object]]) -> rx.Component:
     return rx.vstack(
         rx.text(title, size="2", weight="bold", color="#1c2430"),
@@ -789,17 +816,23 @@ def _datasheet_detail() -> rx.Component:
                 align="center",
             ),
             rx.vstack(
-                _datasheet_group(
-                    "Request",
-                    [
-                        ("ID", selected["id"]),
-                        ("Code", selected["code"]),
-                        ("X-Request-ID", selected["xrequestid"]),
-                        ("Started", selected["started"]),
-                        ("Ended", selected["ended"]),
-                        ("Duration", selected["requestduration"]),
-                        ("Result", selected["resultflag"]),
-                    ],
+                rx.vstack(
+                    rx.text("Request", size="2", weight="bold", color="#1c2430"),
+                    rx.flex(
+                        _modal_fact("ID", selected["id"]),
+                        _modal_fact("Code", selected["code"]),
+                        _datasheet_request_id(),
+                        _modal_fact("Started", selected["started"]),
+                        _modal_fact("Ended", selected["ended"]),
+                        _modal_fact("Duration", selected["requestduration"]),
+                        _modal_fact("Result", selected["resultflag"]),
+                        wrap="wrap",
+                        gap="0.85rem 1.25rem",
+                        width="100%",
+                    ),
+                    spacing="2",
+                    width="100%",
+                    align="start",
                 ),
                 rx.cond(
                     selected["errordescription"] != "",

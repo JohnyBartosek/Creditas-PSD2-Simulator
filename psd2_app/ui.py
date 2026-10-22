@@ -16,6 +16,25 @@ NAV_ITEMS = [
 ]
 
 
+class BodyPortal(rx.Component):
+    """Draw children on document.body so they sit above Radix dialogs."""
+
+    tag = "BodyPortal"
+
+    def add_imports(self):
+        return {"react-dom": "createPortal", "react": ["useEffect", "useState"]}
+
+    def add_custom_code(self) -> list[str]:
+        return [
+            "const BodyPortal = ({ children }) => {"
+            " const [mounted, setMounted] = useState(false);"
+            " useEffect(() => { setMounted(true); }, []);"
+            " if (!mounted) return null;"
+            " return createPortal(children, document.body);"
+            "};"
+        ]
+
+
 def field(label: str, value, on_change, **props) -> rx.Component:
     return rx.vstack(
         rx.text(label, size="2", weight="medium"),
@@ -505,7 +524,8 @@ def kibana_trace_panel() -> rx.Component:
             border_radius="12px",
             box_shadow="0 16px 40px rgba(16, 24, 40, 0.16)",
             padding="1rem",
-            z_index="50",
+            z_index="10001",
+            pointer_events="auto",
         ),
     )
 
@@ -536,7 +556,8 @@ def kibana_trace_spinner() -> rx.Component:
             ),
             position="fixed",
             inset="0",
-            z_index="60",
+            z_index="10000",
+            pointer_events="auto",
             style={
                 "background": "radial-gradient(circle at 50% 46%, rgba(79, 70, 229, 0.14), rgba(243, 245, 248, 0.94) 46%)",
                 "backdropFilter": "blur(12px)",
@@ -547,8 +568,20 @@ def kibana_trace_spinner() -> rx.Component:
 
 def log_panel() -> rx.Component:
     return rx.fragment(
-        kibana_trace_spinner(),
-        kibana_trace_panel(),
+        BodyPortal.create(
+            rx.theme(
+                kibana_trace_spinner(),
+                kibana_trace_panel(),
+                has_background=False,
+                style={
+                    "position": "static",
+                    "zIndex": "auto",
+                    "minHeight": "0",
+                    "height": "0",
+                    "background": "transparent",
+                },
+            ),
+        ),
         rx.cond(
             AppState.current_page != "accounts",
             rx.box(
