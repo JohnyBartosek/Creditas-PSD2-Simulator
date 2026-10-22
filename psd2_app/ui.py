@@ -346,6 +346,14 @@ def sidebar() -> rx.Component:
                     width="100%",
                     min_width="0",
                 ),
+                rx.separator(),
+                rx.text("Tools", weight="bold", size="2"),
+                rx.vstack(
+                    _nav_button("Kibana Log Miner", "kibana-miner"),
+                    spacing="1",
+                    width="100%",
+                    min_width="0",
+                ),
                 spacing="3",
                 width="100%",
                 min_width="0",
@@ -422,8 +430,124 @@ def page_shell(title: str, *children, header_action=None, fill: bool = False) ->
     )
 
 
+def kibana_trace_panel() -> rx.Component:
+    return rx.cond(
+        AppState.kibana_trace_open,
+        rx.box(
+            rx.vstack(
+                rx.hstack(
+                    rx.heading("Kibana logs", size="4"),
+                    rx.badge(AppState.kibana_trace_logs.length()),
+                    rx.spacer(),
+                    rx.button("Close", size="1", variant="ghost", on_click=AppState.close_kibana_trace),
+                    width="100%",
+                    align="center",
+                ),
+                rx.cond(
+                    AppState.kibana_trace_span != "",
+                    rx.text("X-B3-SpanId ", AppState.kibana_trace_span, size="1", color="gray"),
+                ),
+                rx.scroll_area(
+                    rx.vstack(
+                        rx.foreach(
+                            AppState.kibana_trace_logs,
+                            lambda item: rx.box(
+                                rx.hstack(
+                                    rx.cond(
+                                        item["component"] != "",
+                                        rx.badge(item["component"], variant="soft", size="1"),
+                                    ),
+                                    rx.text(item["timestamp"], size="1", color="gray"),
+                                    spacing="2",
+                                    align="center",
+                                ),
+                                rx.text(item["preview"], size="1"),
+                                on_click=AppState.show_kibana_trace_log(item["index"]),
+                                width="100%",
+                                padding="0.45rem 0.5rem",
+                                border_radius="8px",
+                                cursor="pointer",
+                                background=rx.cond(
+                                    AppState.kibana_trace_index == item["index"],
+                                    "#eef2ff",
+                                    "transparent",
+                                ),
+                                _hover={"background": "#f4f6fb"},
+                            ),
+                        ),
+                        spacing="1",
+                        width="100%",
+                        align="start",
+                    ),
+                    max_height="16rem",
+                    width="100%",
+                ),
+                rx.text_area(
+                    value=AppState.kibana_trace_detail,
+                    read_only=True,
+                    width="100%",
+                    rows="14",
+                ),
+                spacing="2",
+                width="100%",
+                align="start",
+            ),
+            position="fixed",
+            top="5rem",
+            left="50%",
+            transform="translateX(-50%)",
+            width="min(46rem, calc(100vw - 2.5rem))",
+            max_height="calc(100vh - 6.5rem)",
+            overflow_y="auto",
+            background="white",
+            border="1px solid #e4e7ec",
+            border_radius="12px",
+            box_shadow="0 16px 40px rgba(16, 24, 40, 0.16)",
+            padding="1rem",
+            z_index="50",
+        ),
+    )
+
+
+def kibana_trace_spinner() -> rx.Component:
+    return rx.cond(
+        AppState.kibana_trace_loading,
+        rx.box(
+            rx.center(
+                rx.vstack(
+                    rx.spinner(size="3"),
+                    rx.text("Loading Kibana logs...", size="3", weight="medium", color="#1c2430"),
+                    rx.cond(
+                        AppState.kibana_trace_step != "",
+                        rx.text(
+                            AppState.kibana_trace_step,
+                            size="1",
+                            color="#667085",
+                            text_align="center",
+                            width="min(36rem, calc(100vw - 3rem))",
+                        ),
+                    ),
+                    spacing="3",
+                    align="center",
+                ),
+                width="100%",
+                height="100%",
+            ),
+            position="fixed",
+            inset="0",
+            z_index="60",
+            style={
+                "background": "radial-gradient(circle at 50% 46%, rgba(79, 70, 229, 0.14), rgba(243, 245, 248, 0.94) 46%)",
+                "backdropFilter": "blur(12px)",
+            },
+        ),
+    )
+
+
 def log_panel() -> rx.Component:
     return rx.fragment(
+        kibana_trace_spinner(),
+        kibana_trace_panel(),
         rx.cond(
             AppState.current_page != "accounts",
             rx.box(
@@ -471,7 +595,24 @@ def log_panel() -> rx.Component:
                         rx.foreach(
                             AppState.account_logs,
                             lambda log: rx.callout(
-                                rx.text(log["timestamp"], "  ", log["message"], size="1"),
+                                rx.vstack(
+                                    rx.text(log["timestamp"], "  ", log["message"], size="1"),
+                                    rx.cond(
+                                        log["kibana_url"] != "",
+                                        rx.tooltip(
+                                            rx.button(
+                                                "Kibana",
+                                                size="1",
+                                                variant="soft",
+                                                on_click=AppState.open_kibana_trace(log["request_id"]),
+                                            ),
+                                            content="Download the X-B3-SpanId logs into the app",
+                                        ),
+                                    ),
+                                    spacing="1",
+                                    align="start",
+                                    width="100%",
+                                ),
                                 color_scheme=log["color"],
                                 width="100%",
                             ),

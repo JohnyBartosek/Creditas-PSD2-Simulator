@@ -194,6 +194,18 @@ def get_ib_login_url(environment: Optional[str] = None) -> str:
     return get_url('internet_banking', 'login_url', environment)
 
 
+def get_kibana_settings(environment: Optional[str] = None) -> Dict[str, str]:
+    """Discover URL, optional data view id, and the default time range."""
+    env_config = get_environment_config(environment)
+    kibana = env_config.get("kibana") or {}
+    time_from = str(kibana.get("time_from") or "now-24h").strip() or "now-24h"
+    return {
+        "discover_url": str(kibana.get("discover_url") or "").strip(),
+        "data_view": str(kibana.get("data_view") or "").strip(),
+        "time_from": time_from,
+    }
+
+
 def get_database_dir(environment: Optional[str] = None) -> Path:
     """
     Get the database directory path for a specific environment

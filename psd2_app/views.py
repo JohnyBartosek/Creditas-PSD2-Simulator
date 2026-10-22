@@ -576,6 +576,62 @@ def users_page() -> rx.Component:
     )
 
 
+def kibana_miner_page() -> rx.Component:
+    return page_shell(
+        "Kibana Log Miner",
+        rx.box(
+            rx.box(
+                rx.vstack(
+                    rx.vstack(
+                        rx.text("Search by", size="2", weight="medium"),
+                        rx.segmented_control.root(
+                            rx.segmented_control.item("Request Id", value="request"),
+                            rx.segmented_control.item("Span Id", value="span"),
+                            value=AppState.kibana_miner_mode,
+                            on_change=AppState.set_kibana_miner_mode,
+                            size="2",
+                            radius="large",
+                        ),
+                        spacing="2",
+                        align="start",
+                    ),
+                    field(
+                        rx.cond(
+                            AppState.kibana_miner_mode == "span",
+                            "X-B3-SpanId",
+                            "X-Request-ID",
+                        ),
+                        AppState.kibana_miner_request_id,
+                        AppState.set_kibana_miner_request_id,
+                    ),
+                    rx.button(
+                        "Find logs",
+                        on_click=AppState.find_kibana_logs,
+                        disabled=AppState.kibana_trace_loading,
+                        style={"background": "#4f46e5", "color": "white"},
+                    ),
+                    spacing="4",
+                    width="100%",
+                    align="start",
+                ),
+                width="min(36rem, 100%)",
+                padding="1.15rem 1.25rem",
+                background="white",
+                border="1px solid #e7eaf0",
+                border_radius="16px",
+                box_shadow="0 10px 28px rgba(16, 24, 40, 0.06)",
+            ),
+            width="100%",
+            flex="1",
+            min_height="0",
+            display="flex",
+            align_items="center",
+            justify_content="center",
+        ),
+        fill=True,
+    )
+
+
 def configuration_page() -> rx.Component:
     return page_shell(
         "Configuration",
@@ -3048,6 +3104,7 @@ def app_page() -> rx.Component:
                         ("consents", consents_page()),
                         ("configuration", configuration_page()),
                         ("auth-code", auth_code_page()),
+                        ("kibana-miner", kibana_miner_page()),
                         dashboard_page(),
                     ),
                 ),

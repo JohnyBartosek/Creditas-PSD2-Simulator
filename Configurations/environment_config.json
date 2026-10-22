@@ -25,6 +25,11 @@
       },
       "internet_banking": {
         "login_url": "https://ui.dmz.itg.ibk.gwc.az.creditasgroup.cz/login"
+      },
+      "kibana": {
+        "discover_url": "https://kibana.eck-npr-01.npr.int.k8s.creditas.cz/app/discover",
+        "data_view": "3cced49e-026f-4c16-a9cc-36e4b98e6615",
+        "time_from": "now-24h"
       }
     },
     "TST": {
@@ -51,6 +56,11 @@
       },
       "internet_banking": {
         "login_url": "https://ui.dmz.tst.ibk.gwc.az.creditasgroup.cz/login"
+      },
+      "kibana": {
+        "discover_url": "https://kibana.eck-npr-01.npr.int.k8s.creditas.cz/app/discover",
+        "data_view": "f6fe33ff-0a79-42fc-afcc-8edd53aef556",
+        "time_from": "now-24h"
       }
     },
     "PRE": {
@@ -77,6 +87,11 @@
       },
       "internet_banking": {
         "login_url": "https://ui.dmz.pre.ibk.gwc.az.creditasgroup.cz/login"
+      },
+      "kibana": {
+        "discover_url": "https://kibana.eck-npr-01.npr.int.k8s.creditas.cz/app/discover",
+        "data_view": "",
+        "time_from": "now-24h"
       }
     },
     "PROD": {
@@ -103,6 +118,11 @@
       },
       "internet_banking": {
         "login_url": "https://ui.dmz.prod.ibk.gwc.az.creditasgroup.cz/login"
+      },
+      "kibana": {
+        "discover_url": "",
+        "data_view": "",
+        "time_from": "now-24h"
       }
     }
   }

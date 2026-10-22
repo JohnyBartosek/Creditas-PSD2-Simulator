@@ -13,6 +13,15 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+_REQUEST_ID_RE = re.compile(
+    r"X-Request-ID:\s*([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})",
+    re.IGNORECASE,
+)
+_UUID_RE = re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+_RISON_TIME_RE = re.compile(r"^[A-Za-z0-9_+-]+$")
+_DATA_VIEW_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -21,6 +30,7 @@ from Helpers.environment_config import (
     get_consents_url,
     get_current_environment,
     get_database_file,
+    get_kibana_settings,
     get_show_invalid_consents,
     load_environment_config,
     load_token_config,
@@ -176,6 +186,85 @@ def user_name_map() -> dict[str, str]:
     return mapping
 
 
+def request_id_from_text(*parts: str) -> str:
+    """Last printed X-Request-ID. Scripts often echo the header more than once."""
+    found = ""
+    for part in parts:
+        for match in _REQUEST_ID_RE.finditer(part or ""):
+            found = match.group(1)
+    return found
+
+
+def result_request_id(result: dict | None) -> str:
+    if not isinstance(result, dict):
+        return ""
+    explicit = str(result.get("request_id") or "").strip()
+    if _UUID_RE.fullmatch(explicit):
+        return explicit
+    return request_id_from_text(str(result.get("output") or ""), str(result.get("error") or ""))
+
+
+def _rison_string(value: str) -> str:
+    escaped = value.replace("!", "!!").replace("'", "!'")
+    return f"'{escaped}'"
+
+
+def kibana_discover_url(kql: str) -> str:
+    """Discover URL for one KQL query. Empty when this environment has no Kibana URL."""
+    settings = get_kibana_settings()
+    base = settings["discover_url"].split("#", 1)[0].strip().rstrip("/")
+    if not base or not kql.strip():
+        return ""
+    time_from = settings["time_from"]
+    if not _RISON_TIME_RE.fullmatch(time_from):
+        time_from = "now-24h"
+    data_view = settings["data_view"]
+    data_source = ""
+    if data_view and _DATA_VIEW_RE.fullmatch(data_view):
+        data_source = f"dataSource:(dataViewId:'{data_view}',type:dataView),"
+    global_state = f"(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:{time_from},to:now))"
+    app_state = (
+        f"(columns:!(message),{data_source}filters:!(),interval:auto,"
+        f"query:(language:kuery,query:{_rison_string(kql)}),"
+        "sort:!(!('@timestamp',desc)))"
+    )
+    return f"{base}#/?_g={global_state}&_a={app_state}"
+
+
+def kibana_request_kql(request_id: str) -> str:
+    """Match the request id anywhere in message. The id can be any text."""
+    request_id = (request_id or "").strip()
+    if not request_id:
+        return ""
+    escaped = request_id.replace("\\", "\\\\").replace('"', '\\"')
+    return f'message: "*{escaped}*"'
+
+
+def kibana_request_url(request_id: str) -> str:
+    """Logs keep X-Request-ID inside message, not in its own field."""
+    return kibana_discover_url(kibana_request_kql(request_id))
+
+
+def kibana_spans_kql(span_ids: list[str]) -> str:
+    """Quoted wildcard so a span id matches the access log and the internal services."""
+    clauses = []
+    for span_id in span_ids:
+        span_id = (span_id or "").strip()
+        if span_id and span_id not in clauses:
+            clauses.append(span_id.replace("\\", "\\\\").replace('"', '\\"'))
+    return " or ".join(f'"*{span_id}*"' for span_id in clauses)
+
+
+def kibana_spans_url(span_ids: list[str]) -> str:
+    """Internal logs are tied to X-B3-SpanId from the access log, not to X-Request-ID."""
+    return kibana_discover_url(kibana_spans_kql(span_ids))
+
+
+def kibana_span_url(span_id: str) -> str:
+    """Internal services log under x-b3-span-id taken from the X-Request-ID hits."""
+    return kibana_spans_url([span_id])
+
+
 def run_script(script: str, args: list[str], capture: bool = True) -> dict:
     cmd = [sys.executable, str(ROOT / "Requests" / script), *args]
     try:
@@ -192,11 +281,14 @@ def run_script(script: str, args: list[str], capture: bool = True) -> dict:
                 print(result.stdout, flush=True)
             if result.stderr:
                 print(result.stderr, file=sys.stderr, flush=True)
+            output = result.stdout or ""
+            error = result.stderr or ""
             return {
                 "success": result.returncode == 0,
-                "output": result.stdout or "",
-                "error": result.stderr or "",
+                "output": output,
+                "error": error,
                 "returncode": result.returncode,
+                "request_id": request_id_from_text(output, error),
             }
         result = subprocess.run(cmd, text=True, cwd=ROOT)
         return {
@@ -204,9 +296,10 @@ def run_script(script: str, args: list[str], capture: bool = True) -> dict:
             "output": "",
             "error": "",
             "returncode": result.returncode,
+            "request_id": "",
         }
     except Exception as exc:
-        return {"success": False, "output": "", "error": str(exc), "returncode": -1}
+        return {"success": False, "output": "", "error": str(exc), "returncode": -1, "request_id": ""}
 
 
 def response_http_status(output: str) -> int | None:
@@ -638,16 +731,16 @@ def register_tpp(name: str, scope: str) -> dict:
     result = run_script("TPP_Registration_post.py", ["--client-name", name.strip(), "--scope", scope])
     output = result["error"] or result["output"]
     if result["success"]:
-        return {"ok": True, "message": "Registration completed.", "output": result["output"]}
-    return {"ok": False, "message": "Registration failed.", "output": output}
+        return {"ok": True, "message": "Registration completed.", "output": result["output"], "request_id": result.get("request_id") or ""}
+    return {"ok": False, "message": "Registration failed.", "output": output, "request_id": result.get("request_id") or ""}
 
 
 def delete_registration(client_id: str) -> dict:
     result = run_script("TPP_Registration_delete.py", ["--client-id", client_id])
     output = result["error"] or result["output"]
     if result["success"]:
-        return {"ok": True, "message": "Registration deleted.", "output": result["output"]}
-    return {"ok": False, "message": "Delete failed.", "output": output}
+        return {"ok": True, "message": "Registration deleted.", "output": result["output"], "request_id": result.get("request_id") or ""}
+    return {"ok": False, "message": "Delete failed.", "output": output, "request_id": result.get("request_id") or ""}
 
 
 def _format_refresh_created(timestamp_str: str) -> str:
@@ -1068,8 +1161,8 @@ def create_consent(owner_id: str, oauth_client_id: str, oauth_client_name: str, 
     result = run_script("TPP_Consent_Post.py", args)
     output = result["error"] or result["output"]
     if result["success"]:
-        return {"ok": True, "message": "Consent created.", "output": result["output"]}
-    return {"ok": False, "message": "Consent creation failed.", "output": output}
+        return {"ok": True, "message": "Consent created.", "output": result["output"], "request_id": result.get("request_id") or ""}
+    return {"ok": False, "message": "Consent creation failed.", "output": output, "request_id": result.get("request_id") or ""}
 
 
 def delete_consents(token_client_id: str, token_user_id: str, user_id_param: str, oauth_client_id: str) -> dict:
@@ -1083,8 +1176,8 @@ def delete_consents(token_client_id: str, token_user_id: str, user_id_param: str
     ])
     output = result["error"] or result["output"]
     if result["success"]:
-        return {"ok": True, "message": "Consents deleted.", "output": result["output"]}
-    return {"ok": False, "message": "Delete failed.", "output": output}
+        return {"ok": True, "message": "Consents deleted.", "output": result["output"], "request_id": result.get("request_id") or ""}
+    return {"ok": False, "message": "Delete failed.", "output": output, "request_id": result.get("request_id") or ""}
 
 
 def delete_consent_by_id(consent_id: str) -> dict:
@@ -1096,11 +1189,12 @@ def delete_consent_by_id(consent_id: str) -> dict:
 
         url = f"{get_consents_url()}/{consent_id.strip()}"
         token = get_employee_token_requests(verify_ssl=False)
+        request_id = str(uuid.uuid4())
         response = requests.delete(
             url,
             headers={
                 "Authorization": f"Bearer {token}",
-                "X-Request-ID": str(uuid.uuid4()),
+                "X-Request-ID": request_id,
                 "Content-Type": "application/json",
             },
             verify=False,
@@ -1112,10 +1206,10 @@ def delete_consent_by_id(consent_id: str) -> dict:
         except Exception:
             pass
         if response.status_code in (200, 204):
-            return {"ok": True, "message": f"Consent {consent_id.strip()} deleted.", "output": body}
-        return {"ok": False, "message": f"Delete failed. Status {response.status_code}.", "output": body}
+            return {"ok": True, "message": f"Consent {consent_id.strip()} deleted.", "output": body, "request_id": request_id}
+        return {"ok": False, "message": f"Delete failed. Status {response.status_code}.", "output": body, "request_id": request_id}
     except Exception as exc:
-        return {"ok": False, "message": f"Error deleting consent: {exc}", "output": ""}
+        return {"ok": False, "message": f"Error deleting consent: {exc}", "output": "", "request_id": ""}
 
 
 def is_service_unavailable(message: str) -> bool:
@@ -1839,7 +1933,7 @@ def _extract_payment_status(action_response, raw_output: str) -> str:
 def run_payment_action(client_id: str, user_id: str, action: str, index: int) -> dict:
     payments = load_created_payments()
     if index < 0 or index >= len(payments):
-        return {"ok": False, "message": "Payment was not found.", "output": "", "table": payment_table()}
+        return {"ok": False, "message": "Payment was not found.", "output": "", "request_id": "", "table": payment_table()}
     payment = payments[index]
     args = [
         "--client-id", str(client_id),
@@ -1884,7 +1978,13 @@ def run_payment_action(client_id: str, user_id: str, action: str, index: int) ->
                             _save_payments(refreshed)
                     if status_data:
                         output += "\n\nLatest status response:\n" + pretty(status_data)
-    return {"ok": result["success"], "message": message, "output": output, "table": payment_table()}
+    return {
+        "ok": result["success"],
+        "message": message,
+        "output": output,
+        "request_id": result.get("request_id") or "",
+        "table": payment_table(),
+    }
 
 
 def refresh_access_token(client_id: str, user_id: str) -> dict:
@@ -1935,14 +2035,23 @@ def authorize_and_exchange(client_id: str, user_id: str) -> dict:
     return {"ok": False, "message": f"Token exchange finished with exit code {token['returncode']}."}
 
 
-def log_line(message: str, level: str = "info") -> dict:
-    color = {"error": "red", "warning": "orange"}.get(level, "blue")
+def log_entry(message: str, level: str = "info", request_id: str = "") -> dict[str, str]:
+    color = {"error": "red", "warning": "orange", "success": "green"}.get(level, "blue")
+    request_id = (request_id or request_id_from_text(message)).strip()
+    if not _UUID_RE.fullmatch(request_id):
+        request_id = ""
     return {
         "timestamp": datetime.now().strftime("%H:%M:%S"),
         "level": level,
         "message": message,
         "color": color,
+        "request_id": request_id,
+        "kibana_url": kibana_request_url(request_id),
     }
+
+
+def log_line(message: str, level: str = "info", request_id: str = "") -> dict[str, str]:
+    return log_entry(message, level, request_id)
 
 
 async def prepare_accounts(client_id: str, user_id: str) -> dict:
@@ -1957,14 +2066,15 @@ async def prepare_accounts(client_id: str, user_id: str) -> dict:
         logs.append(log_line("Fetching account list..."))
         result = await asyncio.to_thread(fetch_accounts, client_id, user_id)
         raw_output = result["output"] or result["error"]
+        request_id = result_request_id(result)
         if result["success"]:
             account_data = extract_json(result["output"])
-            logs.append(log_line("Account list fetched" if account_data else "Could not parse JSON from response", "info" if account_data else "warning"))
+            logs.append(log_line("Account list fetched" if account_data else "Could not parse JSON from response", "info" if account_data else "warning", request_id))
         elif is_service_unavailable(f"{result['error']}\n{result['output']}"):
             status = _unavailable_status()
-            logs.append(log_line("Service unavailable", "error"))
+            logs.append(log_line("Service unavailable", "error", request_id))
         else:
-            logs.append(log_line(f"Failed to fetch accounts: {result['error']}", "error"))
+            logs.append(log_line(f"Failed to fetch accounts: {result['error']}", "error", request_id))
     elif status["refresh_ready"]:
         logs.append(log_line("Access token expired, but refresh token is valid"))
         logs.append(log_line("Refreshing access token..."))
@@ -1975,14 +2085,15 @@ async def prepare_accounts(client_id: str, user_id: str) -> dict:
             if status["access_ready"]:
                 result = await asyncio.to_thread(fetch_accounts, client_id, user_id)
                 raw_output = result["output"] or result["error"]
+                request_id = result_request_id(result)
                 if result["success"]:
                     account_data = extract_json(result["output"])
-                    logs.append(log_line("Account list fetched" if account_data else "Could not parse JSON from response", "info" if account_data else "warning"))
+                    logs.append(log_line("Account list fetched" if account_data else "Could not parse JSON from response", "info" if account_data else "warning", request_id))
                 elif is_service_unavailable(f"{result['error']}\n{result['output']}"):
                     status = _unavailable_status()
-                    logs.append(log_line("Service unavailable", "error"))
+                    logs.append(log_line("Service unavailable", "error", request_id))
                 else:
-                    logs.append(log_line(f"Failed to fetch accounts: {result['error']}", "error"))
+                    logs.append(log_line(f"Failed to fetch accounts: {result['error']}", "error", request_id))
             elif status["status"] == "unavailable":
                 logs.append(log_line("Service unavailable", "error"))
             else:

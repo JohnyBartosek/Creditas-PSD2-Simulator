@@ -2,10 +2,12 @@
 
 import asyncio
 import json
+import queue
 from datetime import datetime
 
 import reflex as rx
 
+from Helpers.kibana_trace import trace_request_in_kibana, trace_span_in_kibana
 from psd2_app.logic import (
     CONSENT_SCOPES,
     account_currency,
@@ -38,6 +40,8 @@ from psd2_app.logic import (
     balance_entries,
     extract_json,
     is_service_unavailable,
+    log_entry,
+    result_request_id,
     fetch_balance,
     fetch_consents,
     fetch_otp_codes,
@@ -80,6 +84,7 @@ PAGE_WAIT_MESSAGES = {
     "consents": "Loading consents...",
     "configuration": "Loading configuration...",
     "auth-code": "Loading authorization codes...",
+    "kibana-miner": "Opening Kibana Log Miner...",
 }
 _TX_BLANK = {
     "index": "",
@@ -321,6 +326,15 @@ class AppState(rx.State):
     form_delete_consent_id: str = ""
 
     account_logs: list[dict[str, str]] = []
+    kibana_miner_request_id: str = ""
+    kibana_miner_mode: str = "request"
+    kibana_trace_loading: bool = False
+    kibana_trace_step: str = ""
+    kibana_trace_open: bool = False
+    kibana_trace_span: str = ""
+    kibana_trace_logs: list[dict[str, str]] = []
+    kibana_trace_index: str = ""
+    kibana_trace_detail: str = ""
     refresh_error: str = ""
     account_status: str = ""
     account_status_text: str = ""
@@ -594,25 +608,16 @@ class AppState(rx.State):
             scopes.append(CONSENT_SCOPES[3])
         return scopes
 
-    def _log(self, message: str, level: str = "info"):
-        color = {"error": "red", "warning": "orange", "success": "green"}.get(level, "blue")
-        self.account_logs = [
-            *self.account_logs,
-            {
-                "timestamp": datetime.now().strftime("%H:%M:%S"),
-                "level": level,
-                "message": message,
-                "color": color,
-            },
-        ]
+    def _log(self, message: str, level: str = "info", request_id: str = ""):
+        self.account_logs = [*self.account_logs, log_entry(message, level, request_id)]
         if len(self.account_logs) > 80:
             self.account_logs = self.account_logs[-80:]
 
-    def _notify(self, message: str, level: str = "info"):
+    def _notify(self, message: str, level: str = "info", request_id: str = ""):
         self.notice = message
         self.notice_level = level
         self.notice_token += 1
-        self._log(message, level)
+        self._log(message, level, request_id)
         if level == "error":
             return AppState.schedule_clear_critical
         if level == "warning":
@@ -649,6 +654,84 @@ class AppState(rx.State):
     @rx.event
     def toggle_log(self):
         self.log_open = not self.log_open
+
+    @rx.event
+    def set_kibana_miner_mode(self, value: str | list[str]):
+        mode = value[0] if isinstance(value, list) else value
+        if mode in {"request", "span"}:
+            self.kibana_miner_mode = mode
+
+    @rx.event
+    def find_kibana_logs(self):
+        value = self.kibana_miner_request_id.strip()
+        if self.kibana_miner_mode == "span":
+            if not value:
+                return self._notify("Enter an X-B3-SpanId.", "warning")
+            return AppState.open_kibana_span(value)
+        if not value:
+            return self._notify("Enter an X-Request-ID.", "warning")
+        return AppState.open_kibana_trace(value)
+
+    async def _publish_kibana_steps(self, progress: queue.Queue):
+        pending = []
+        while True:
+            try:
+                pending.append(progress.get_nowait())
+            except queue.Empty:
+                break
+        if not pending:
+            return
+        async with self:
+            self.kibana_trace_step = pending[-1]
+
+    async def _run_kibana_trace(self, value: str, runner):
+        value = str(value or "").strip()
+        async with self:
+            if not value:
+                return
+            self.log_open = True
+            self.kibana_trace_loading = True
+            self.kibana_trace_step = ""
+            self._log(f"Loading Kibana logs for {value}.", "info", value)
+        progress: queue.Queue[str] = queue.Queue()
+        worker = asyncio.create_task(asyncio.to_thread(runner, value, progress.put))
+        try:
+            while not worker.done():
+                await asyncio.sleep(0.2)
+                await self._publish_kibana_steps(progress)
+            result = worker.result()
+            await self._publish_kibana_steps(progress)
+            await asyncio.sleep(0.25)
+        finally:
+            async with self:
+                self.kibana_trace_loading = False
+        async with self:
+            level = "success" if result.get("ok") else "warning"
+            self._log(result.get("message") or "Kibana trace finished.", level, value)
+            rows = []
+            for index, item in enumerate(result.get("logs") or []):
+                if not isinstance(item, dict):
+                    continue
+                rows.append({
+                    "index": str(index),
+                    "timestamp": str(item.get("timestamp") or ""),
+                    "message": str(item.get("message") or ""),
+                    "preview": str(item.get("preview") or ""),
+                    "component": str(item.get("component") or ""),
+                })
+            self.kibana_trace_logs = rows
+            self.kibana_trace_span = ", ".join(str(item) for item in (result.get("span_ids") or []))
+            self.kibana_trace_open = bool(rows)
+            self.kibana_trace_index = rows[0]["index"] if rows else ""
+            self.kibana_trace_detail = rows[0]["message"] if rows else ""
+
+    @rx.event(background=True)
+    async def open_kibana_trace(self, request_id: str):
+        await self._run_kibana_trace(request_id, trace_request_in_kibana)
+
+    @rx.event(background=True)
+    async def open_kibana_span(self, span_id: str):
+        await self._run_kibana_trace(span_id, trace_span_in_kibana)
 
     def _arm_page_wait(self) -> tuple[int, str]:
         self.nav_seq += 1
@@ -702,6 +785,8 @@ class AppState(rx.State):
                 self.open_configuration()
             elif page_id == "auth-code":
                 self.open_auth_codes()
+            elif page_id == "kibana-miner":
+                return
             else:
                 self.open_dashboard()
 
@@ -1450,7 +1535,7 @@ class AppState(rx.State):
         async with self:
             self.busy = False
             self.registration_output = result["output"]
-            self._notify(result["message"], "success" if result["ok"] else "error")
+            self._notify(result["message"], "success" if result["ok"] else "error", result_request_id(result))
             if result["ok"]:
                 self.registration_create_open = False
                 self.refresh_sidebar_options()
@@ -1471,7 +1556,7 @@ class AppState(rx.State):
         async with self:
             self.busy = False
             self.registration_output = result["output"]
-            self._notify(result["message"], "success" if result["ok"] else "error")
+            self._notify(result["message"], "success" if result["ok"] else "error", result_request_id(result))
             if result["ok"]:
                 self.registration_detail_open = False
                 self.registration_label = ""
@@ -1806,7 +1891,7 @@ class AppState(rx.State):
         async with self:
             self.busy = False
             self.consent_output = result["output"]
-            self._notify(result["message"], "success" if result["ok"] else "error")
+            self._notify(result["message"], "success" if result["ok"] else "error", result_request_id(result))
             if consents is not None:
                 self._apply_consents(consents)
 
@@ -1830,7 +1915,7 @@ class AppState(rx.State):
         async with self:
             self.busy = False
             self.consent_output = result["output"]
-            self._notify(result["message"], "success" if result["ok"] else "error")
+            self._notify(result["message"], "success" if result["ok"] else "error", result_request_id(result))
             if consents is not None:
                 self._apply_consents(consents)
 
@@ -1849,7 +1934,7 @@ class AppState(rx.State):
         async with self:
             self.busy = False
             self.consent_output = result["output"]
-            self._notify(result["message"], "success" if result["ok"] else "error")
+            self._notify(result["message"], "success" if result["ok"] else "error", result_request_id(result))
             if consents is not None:
                 self._apply_consents(consents)
 
@@ -2052,15 +2137,7 @@ class AppState(rx.State):
             self.busy_message = "Authorization is running. Complete it in the browser window."
             client_id = self.selected_client_id
             user_id = self.selected_user_id
-            self.account_logs = [
-                *self.account_logs,
-                {
-                    "timestamp": datetime.now().strftime("%H:%M:%S"),
-                    "level": "info",
-                    "message": "Starting authorization flow. A browser window will open.",
-                    "color": "blue",
-                },
-            ]
+            self._log("Starting authorization flow. A browser window will open.")
         result = await asyncio.to_thread(authorize_and_exchange, client_id, user_id)
         data = await prepare_accounts(client_id, user_id)
         async with self:
@@ -2072,6 +2149,18 @@ class AppState(rx.State):
     def clear_account_logs(self):
         self.account_logs = []
         self.refresh_error = ""
+
+    @rx.event
+    def close_kibana_trace(self):
+        self.kibana_trace_open = False
+
+    @rx.event
+    def show_kibana_trace_log(self, index: str):
+        self.kibana_trace_index = index
+        for item in self.kibana_trace_logs:
+            if item.get("index") == index:
+                self.kibana_trace_detail = item.get("message") or ""
+                return
 
     @rx.event
     def show_tx_detail(self, index: str):
@@ -2276,13 +2365,14 @@ class AppState(rx.State):
         )
         async with self:
             self.busy = False
+            request_id = result_request_id(result)
             if not result["success"]:
                 self.tx_output = "\n".join(part for part in (result["output"], result["error"]) if part)
-                return self._notify("Failed to fetch transactions.", "error")
+                return self._notify("Failed to fetch transactions.", "error", request_id)
             parsed = extract_json(result["output"])
             if not parsed:
                 self.tx_output = result["output"]
-                return self._notify("Could not parse the transactions response.", "warning")
+                return self._notify("Could not parse the transactions response.", "warning", request_id)
             records = transaction_records(parsed)
             self.tx_page_index = page
             self.tx_total = transaction_total(parsed)
@@ -2294,7 +2384,7 @@ class AppState(rx.State):
                 found = self.tx_total
             else:
                 found = page * TX_PAGE_SIZE + len(records)
-            return self._notify(f"Found {found} transaction(s).", "success")
+            return self._notify(f"Found {found} transaction(s).", "success", request_id)
 
     @rx.event(background=True)
     async def fetch_account_balance(self):
@@ -2310,22 +2400,24 @@ class AppState(rx.State):
         async with self:
             if self.account_detail_id != account_id:
                 return
+            request_id = result_request_id(result)
             if not result["success"]:
                 self.account_balances = []
                 self.account_balance_note = "Could not load balances."
-                self._log("Could not load balances.", "error")
+                self._log("Could not load balances.", "error", request_id)
                 return
             parsed = extract_json(result["output"])
             if not parsed:
                 self.account_balances = []
                 self.account_balance_note = "Could not read the balance response."
-                self._log("Could not read the balance response.", "warning")
+                self._log("Could not read the balance response.", "warning", request_id)
                 return
             self.account_balances = balance_entries(parsed)
             self.account_balance_note = "" if self.account_balances else "No balances returned."
             self._log(
                 f"Loaded {len(self.account_balances)} balance(s) for account {account_id}.",
                 "info",
+                request_id,
             )
 
     def _refresh_account_payments(self):
@@ -2405,6 +2497,7 @@ class AppState(rx.State):
         async with self:
             self.busy = False
             output = "\n".join(part for part in (result["output"], result["error"]) if part)
+            request_id = result_request_id(result)
             status_code = response_http_status(result["output"])
             parsed = extract_json(result["output"])
             if not isinstance(parsed, dict):
@@ -2412,7 +2505,7 @@ class AppState(rx.State):
             accepted = status_code == 200
             if accepted and not parsed:
                 self.pay_output = output
-                return self._notify("Payment request finished, but the response was not JSON.", "warning")
+                return self._notify("Payment request finished, but the response was not JSON.", "warning", request_id)
             replace_index = int(edit_index) if str(edit_index).isdigit() else None
             saved = save_created_payment(
                 body,
@@ -2425,8 +2518,8 @@ class AppState(rx.State):
             if not saved:
                 self.pay_output = output
                 if accepted:
-                    return self._notify("Payment was created, but it could not be saved locally.", "warning")
-                return self._notify("Payment was not accepted and could not be saved as a draft.", "error")
+                    return self._notify("Payment was created, but it could not be saved locally.", "warning", request_id)
+                return self._notify("Payment was not accepted and could not be saved as a draft.", "error", request_id)
             table = payment_table()
             self.payment_labels = table["labels"]
             self.payment_rows = table["rows"]
@@ -2439,7 +2532,7 @@ class AppState(rx.State):
                 self.pay_edit_index = ""
                 self.pay_output = output
                 status_text = str(status_code) if status_code is not None else "no HTTP 200"
-                return self._notify(f"Payment was not accepted ({status_text}) and was saved as a draft.", "warning")
+                return self._notify(f"Payment was not accepted ({status_text}) and was saved as a draft.", "warning", request_id)
             payments = load_created_payments()
             saved_index = replace_index if replace_index is not None else len(payments) - 1
             payment_id = ""
@@ -2450,7 +2543,9 @@ class AppState(rx.State):
             if not payment_id:
                 self.pay_form_open = False
                 self.pay_edit_index = ""
-                return self._notify("Payment created and saved.", "success")
+                return self._notify("Payment created and saved.", "success", request_id)
+            if request_id:
+                self._log("Payment created.", "success", request_id)
             self.busy = True
             self.busy_message = "Checking payment status..."
         status_result = await asyncio.to_thread(run_payment_action, client_id, user_id, "status", saved_index)
@@ -2463,9 +2558,10 @@ class AppState(rx.State):
             self._refresh_account_payments()
             self.pay_form_open = False
             self.pay_edit_index = ""
+            status_request_id = result_request_id(status_result)
             if status_result["ok"]:
-                return self._notify("Payment created and status updated.", "success")
-            return self._notify("Payment created, but the status could not be updated.", "warning")
+                return self._notify("Payment created and status updated.", "success", status_request_id)
+            return self._notify("Payment created, but the status could not be updated.", "warning", status_request_id)
 
     @rx.event(background=True)
     async def payment_action(self, action: str):
@@ -2486,7 +2582,7 @@ class AppState(rx.State):
             if self.payment_labels and self.payment_label not in self.payment_labels:
                 self.payment_label = self.payment_labels[0]
             self._refresh_account_payments()
-            return self._notify(result["message"], "success" if result["ok"] else "error")
+            return self._notify(result["message"], "success" if result["ok"] else "error", result_request_id(result))
 
     @rx.event(background=True)
     async def run_selected_payment_action(self, action: str):
@@ -2508,7 +2604,7 @@ class AppState(rx.State):
             self._refresh_payment_table()
             self._refresh_account_payments()
             level = "success" if result.get("ok") else "error"
-            return self._notify(result.get("message") or "Payment action finished.", level)
+            return self._notify(result.get("message") or "Payment action finished.", level, result_request_id(result))
 
 
 _parent_vars = set(rx.State.base_vars)
